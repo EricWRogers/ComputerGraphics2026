@@ -42,7 +42,7 @@ void vec_add(void* _refVec, void* _value) {
 
     // check if vec needs to grow
     if (info->count >= info->capacity) {
-        info->capacity = info->capacity * 2;
+        info->capacity = (info->capacity == 0) ? 1 : (info->capacity * 2);
 
         info = realloc( info, sizeof(vec_info) + (info->capacity * info->elementSize));
 
@@ -66,19 +66,16 @@ void vec_add(void* _refVec, void* _value) {
 void vec_remove_at(void* _refVec, unsigned int _index) {
     vec_info* info = *(vec_info**)_refVec - 1;
 
-    void* current = NULL;
-    void* next = NULL;
-    void* end = NULL;
+    if (info->count == 0 || _index >= info->count) {
+        return;
+    }
 
-    end = *(char**)_refVec + ((info->count - 1) * info->elementSize);
-    current = *(char**)_refVec + (_index * info->elementSize);
+    void* current = *(char**)_refVec + (_index * info->elementSize);
+    void* next = (char*)current + info->elementSize;
+    size_t bytes = (size_t)(info->count - _index - 1) * info->elementSize;
 
-    while(current < end) {
-        next = (char*)current + info->elementSize;
-
-        memcpy( current, next, info->elementSize);
-
-        current = next;
+    if (bytes > 0) {
+        memmove(current, next, bytes);
     }
 
     info->count--;
@@ -115,5 +112,61 @@ void vec_save(void* _refVec, const char* _file) {
 }
 
 void vec_load(void* _refVec, const char* _file) {
+    FILE *file;
 
+    file = fopen(_file, "rb");
+
+    if (file == NULL)
+    {
+        fprintf(stderr, "Error opening file for reading\n");
+        exit(1);
+    }
+
+    if (fseek(file, 0, SEEK_END) != 0) {
+        fprintf(stderr, "Error seeking file\n");
+        fclose(file);
+        exit(1);
+    }
+
+    long file_size = ftell(file);
+    if (file_size < (long)sizeof(vec_info)) {
+        fprintf(stderr, "Error reading file (too small)\n");
+        fclose(file);
+        exit(1);
+    }
+
+    rewind(file);
+
+    vec_info* info = malloc((size_t)file_size);
+    if (info == NULL) {
+        fprintf(stderr, "Failed to allocate memory for vector load\n");
+        fclose(file);
+        exit(1);
+    }
+
+    size_t read = fread(info, 1, (size_t)file_size, file);
+
+    if (read != (size_t)file_size) {
+        fprintf(stderr, "Error reading file (short read)\n");
+        free(info);
+        fclose(file);
+        exit(1);
+    }
+
+    size_t expected_size = sizeof(vec_info) + (info->capacity * info->elementSize);
+    if ((size_t)file_size < expected_size) {
+        fprintf(stderr, "Error reading file (size mismatch)\n");
+        free(info);
+        fclose(file);
+        exit(1);
+    }
+
+    if (*(void**)_refVec != NULL) {
+        vec_info* old = *(vec_info**)_refVec - 1;
+        free(old);
+    }
+
+    *(void**)_refVec = info + 1;
+
+    fclose(file);
 }

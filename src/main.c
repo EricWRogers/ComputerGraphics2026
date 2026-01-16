@@ -3,6 +3,9 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 #include "cpup/io.h"
 #include "cpup/vec.h"
@@ -20,14 +23,19 @@ typedef struct {
 
 const unsigned int DEFAULT_TASK_CAPACITY = 1000;
 Task* tasks;
+const char* TASKS_FILE = "tasks.bin";
 
 void list_tasks();
 void add_task();
 void remove_task(int _index);
+void clear_tasks();
+void save_tasks(const char* _file);
+void load_tasks(const char* _file);
 
 int main(int _argc, char* _argv[])
 {
     vec_init(&tasks, DEFAULT_TASK_CAPACITY, sizeof(Task));
+    load_tasks(TASKS_FILE);
 
     int should_loop = 1;
 
@@ -64,9 +72,8 @@ int main(int _argc, char* _argv[])
         };
     }
 
-    // clean up c str
-    while (vec_count(&tasks) > 0)
-        remove_task(vec_count(&tasks) - 1);
+    save_tasks(TASKS_FILE);
+    clear_tasks();
 
     vec_free(&tasks);
     return 0;
@@ -95,4 +102,95 @@ void remove_task(int _index)
     free(tasks[_index].name);
 
     vec_remove_at(&tasks, _index);
+}
+
+void clear_tasks()
+{
+    while (vec_count(&tasks) > 0)
+        remove_task(vec_count(&tasks) - 1);
+}
+
+void save_tasks(const char* _file)
+{
+    FILE* file = fopen(_file, "wb");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file for writing\n");
+        exit(1);
+    }
+
+    uint32_t count = (uint32_t)vec_count(&tasks);
+    if (fwrite(&count, sizeof(count), 1, file) != 1) {
+        fprintf(stderr, "Error writing task count\n");
+        fclose(file);
+        exit(1);
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        uint32_t status = (uint32_t)tasks[i].status;
+        const char* name = tasks[i].name ? tasks[i].name : "";
+        uint32_t name_len = (uint32_t)strlen(name);
+
+        if (fwrite(&status, sizeof(status), 1, file) != 1 ||
+            fwrite(&name_len, sizeof(name_len), 1, file) != 1 ||
+            fwrite(name, 1, name_len, file) != name_len) {
+            fprintf(stderr, "Error writing task\n");
+            fclose(file);
+            exit(1);
+        }
+    }
+
+    fclose(file);
+}
+
+void load_tasks(const char* _file)
+{
+    FILE* file = fopen(_file, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file for reading\n");
+        return;
+    }
+
+    uint32_t count = 0;
+    if (fread(&count, sizeof(count), 1, file) != 1) {
+        fprintf(stderr, "Error reading task count\n");
+        fclose(file);
+        exit(1);
+    }
+
+    clear_tasks();
+
+    for (uint32_t i = 0; i < count; i++) {
+        uint32_t status = 0;
+        uint32_t name_len = 0;
+
+        if (fread(&status, sizeof(status), 1, file) != 1 ||
+            fread(&name_len, sizeof(name_len), 1, file) != 1) {
+            fprintf(stderr, "Error reading task metadata\n");
+            fclose(file);
+            exit(1);
+        }
+
+        char* name = (char*)malloc((size_t)name_len + 1);
+        if (name == NULL) {
+            fprintf(stderr, "Failed to allocate task name\n");
+            fclose(file);
+            exit(1);
+        }
+
+        if (fread(name, 1, name_len, file) != name_len) {
+            fprintf(stderr, "Error reading task name\n");
+            free(name);
+            fclose(file);
+            exit(1);
+        }
+
+        name[name_len] = '\0';
+
+        Task task;
+        task.name = name;
+        task.status = (TASK_STATUS)status;
+        vec_add(&tasks, &task);
+    }
+
+    fclose(file);
 }
