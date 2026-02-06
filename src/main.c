@@ -23,5 +23,29 @@ int main(int argc, char *argv[])
 
 void RunWindow()
 {
-    
+    #ifdef LINUX
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+    #endif
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+    {
+
+    }
+
+    SDL_Window* window = SDL_CreateWindow("CPup", 800, 600, 0);
+
+    if (window == NULL)
+    {
+
+    }
+
+    bool running = true;
+    while(running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_EVENT_QUIT)
+                running = false;
+        }
+    }
 }
