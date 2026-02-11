@@ -20,9 +20,10 @@ AppContext appContext;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform float time;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos.x + sin(time), aPos.y, aPos.z, 1.0);\n"
     "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
@@ -108,11 +109,21 @@ int main(int argc, char *argv[])
         }
 
         // render
+        // clear window
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
+        glUseProgram(shaderProgram);
+        u32 varID = glGetUniformLocation(shaderProgram, "time");
+        glUniform1f(varID, SDL_GetTicks()/1000.0f);
+        glBindVertexArray(VAO);
+        
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
 
         // swap buffer
-        
+        SDL_GL_SwapWindow(appContext.window);
     }
 
     window_destroy(&appContext);
