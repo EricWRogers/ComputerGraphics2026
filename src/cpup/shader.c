@@ -4,6 +4,7 @@
 #include "opengl.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 u32 GenerateShaderFromFiles(const char* _vertexPath, const char* _fragmentPath)
 {
