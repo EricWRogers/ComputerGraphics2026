@@ -8,124 +8,97 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <SDL3/SDL_log.h>
 
 #include "cpup/io.h"
 #include "cpup/vec.h"
 #include "cpup/types.h"
-#include "cpup/opengl.h"
+#include "cpup/model.h"
+#include "cpup/shader.h"
 #include "cpup/window.h"
 
 AppContext appContext;
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "uniform float time;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x + sin(time), aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
 int main(int argc, char *argv[])
 {
+    if (canis_init() > 0)
+        return 1;
+    
     if (window_init(&appContext) > 0)
         return 1;
-
-    // build and compile our shader program
-    // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-    }
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-    }
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    // ------------------------------------
     
-    // first model
-    // -----------
-    f32 vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top  
+    Image image = LoadImage("assets/textures/canis_engine_icon.tga");
+    
+    // build and compile our shader program
+    u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
+    printf("shaderID: %i\n", shaderProgram);
+
+    float ve[] = {
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+    };
+    unsigned int in[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
     };
 
-    u32 VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    f32* vertices = vec_init(32, sizeof(f32));
+    vec_append(&vertices, ve, 32);
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // ----------
+    u32* indices = vec_init(6, sizeof(u32));
+    vec_append(&indices, in, 6);
+    
+    Model model = BuildModel(&vertices, &indices, STATIC_DRAW);
     
     bool running = true;
+    f32 time = 0.0f;
     while(running) {
+        // imput
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_EVENT_QUIT)
                 running = false;
+            if (event.type == SDL_EVENT_KEY_UP)
+            {
+                if (event.key.scancode == SDL_SCANCODE_R)
+                {
+                    printf("Load new shader!\n");
+                    u32 newShader = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
+
+                    if (newShader != 0)
+                    {
+                        DeleteShader(shaderProgram);
+                        shaderProgram = newShader;
+                    }
+                }
+            }
         }
 
         // render
-        // clear window
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        window_clear();
 
         // draw our first triangle
-        glUseProgram(shaderProgram);
-        u32 varID = glGetUniformLocation(shaderProgram, "time");
-        glUniform1f(varID, SDL_GetTicks()/1000.0f);
-        glBindVertexArray(VAO);
+        // bind the shader
+        BindShader(shaderProgram);
+        ShaderBindTexture(shaderProgram, image.id, "MAIN_TEXTURE", 0);
+        ShaderSetFloat(shaderProgram, "TIME", SDL_GetTicks()/1000.0f);
         
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+        DrawModel(model);
+        DrawModel(model);
+        UnBindShader();
 
-        // swap buffer
-        SDL_GL_SwapWindow(appContext.window);
+        window_swap(&appContext);
     }
 
+    FreeModel(model);
+
+    free(image.data);
+
     window_destroy(&appContext);
+
+    DeleteShader(shaderProgram);
     return 0;
 }

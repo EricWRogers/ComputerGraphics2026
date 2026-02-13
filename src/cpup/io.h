@@ -1,5 +1,17 @@
 #pragma once
 #include <string.h>
+#include "types.h"
+
+typedef struct {
+    i32 id;
+    i32 width;
+    i32 height;
+    u32* data;
+} Image;
+
+Image LoadImage(const char* _path);
+
+char* LoadFile(const char* _path);
 
 int     get_int();
 float   get_float();
