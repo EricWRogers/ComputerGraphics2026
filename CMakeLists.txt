@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(fogpi C)
+project(CG C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/>)
@@ -11,6 +11,21 @@ if (CCACHE_PROGRAM)
   set(CMAKE_C_COMPILER_LAUNCHER  "${CCACHE_PROGRAM}")
 else()
     message(STATUS "ccache not found")
+endif()
+
+if (CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+  find_program(MOLD_LINKER mold)
+  find_program(LLD_LINKER  ld.lld)
+
+  if (MOLD_LINKER)
+    message(STATUS "Using mold linker: ${MOLD_LINKER}")
+    add_link_options(-fuse-ld=mold)
+  elseif (LLD_LINKER)
+    message(STATUS "Using lld linker: ${LLD_LINKER}")
+    add_link_options(-fuse-ld=lld)
+  else()
+    message(STATUS "No mold/lld found; using default linker")
+  endif()
 endif()
 
 set_property(GLOBAL PROPERTY CMAKE_CONFIGURE_DEPENDS ON)
@@ -34,12 +49,11 @@ file(GLOB_RECURSE SRC_HEADERS src/*.h)
 
 add_executable(${PROJECT_NAME} ${SRC_SOURCES} ${SRC_HEADERS})
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    PRIVATE
-    SDL3::SDL3
-    libglew_static
-)
+if(NOT EMSCRIPTEN)
+  target_link_libraries(${PROJECT_NAME} PRIVATE m)
+endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
@@ -48,3 +62,15 @@ target_link_libraries(${PROJECT_NAME}
     libglew_static
 )
 
+target_precompile_headers(${PROJECT_NAME}
+    PRIVATE
+    <stdio.h>
+    <stdlib.h>
+    <string.h>
+
+    "src/cpup/vec.h"
+    "src/cpup/arena.h"
+    "src/cpup/io.h"
+    "src/cpup/types.h"
+    "src/cpup/opengl.h"
+)

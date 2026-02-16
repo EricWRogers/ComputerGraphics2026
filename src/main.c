@@ -11,33 +11,37 @@
 
 #include "cpup/io.h"
 #include "cpup/vec.h"
+#include "cpup/math.h"
 #include "cpup/types.h"
 #include "cpup/model.h"
 #include "cpup/shader.h"
 #include "cpup/window.h"
 
-AppContext appContext;
+AppContext app;
 
 int main(int argc, char *argv[])
 {
-    if (canis_init() > 0)
+    if (InitCanis() > 0)
+        return 1;
+
+    app.windowWidth = 600;
+    app.windowHeight = 600;
+    
+    if (InitWindow(&app) > 0)
         return 1;
     
-    if (window_init(&appContext) > 0)
-        return 1;
-    
-    Image image = LoadImage("assets/textures/canis_engine_icon.tga");
+    Image iconImage = LoadImage("assets/textures/canis_engine_icon.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
     printf("shaderID: %i\n", shaderProgram);
 
     float ve[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        // positions            // texture coords
+         0.5f,  0.5f, 0.0f,     1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,     1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f  // top left 
     };
     unsigned int in[] = {
         0, 1, 3, // first triangle
@@ -78,26 +82,39 @@ int main(int argc, char *argv[])
         }
 
         // render
-        window_clear();
+        ClearWindow();
+
+        Matrix4 projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 100.0f); 
+        Matrix4 view = IdentityMatrix4(); 
+        Mat4Translate(&view, InitVector3(0.0f, 0.0f, -0.5f));
+        
+        Matrix4 transform = IdentityMatrix4(); // the order is important
+        Mat4Translate(&transform, InitVector3(300.0f, 300.0f, 0.0f));
+        Mat4Rotate(&transform, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
+        Mat4Scale(&transform, InitVector3(128.0f, 128.0f, 1.0f));
 
         // draw our first triangle
         // bind the shader
         BindShader(shaderProgram);
-        ShaderBindTexture(shaderProgram, image.id, "MAIN_TEXTURE", 0);
-        ShaderSetFloat(shaderProgram, "TIME", SDL_GetTicks()/1000.0f);
         
+        ShaderSetFloat(shaderProgram, "TIME", SDL_GetTicks()/1000.0f);
+        ShaderSetMatrix4(shaderProgram, "VIEW", view);
+        ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
+
+        ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
+        ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
         DrawModel(model);
-        DrawModel(model);
+
         UnBindShader();
 
-        window_swap(&appContext);
+        SwapWindow(&app);
     }
 
     FreeModel(model);
 
-    free(image.data);
+    free(iconImage.data);
 
-    window_destroy(&appContext);
+    FreeWindow(&app);
 
     DeleteShader(shaderProgram);
     return 0;
