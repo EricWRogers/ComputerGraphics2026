@@ -9,7 +9,7 @@ typedef struct {
     u32* data;
 } Image;
 
-Image LoadImage(const char* _path);
+Image IOLoadImage(const char* _path);
 
 char* LoadFile(const char* _path);
 

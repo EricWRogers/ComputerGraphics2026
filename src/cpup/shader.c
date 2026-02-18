@@ -92,8 +92,9 @@ void UnBindShader()
 
 void ShaderBindTexture(u32 _shaderID, u32 _textureID, const char* _variableName, u32 _slot)
 {
+    glActiveTexture(GL_TEXTURE0 + _slot);
     // load the texture into a slot
-    glBindTexture(GL_TEXTURE_2D + _slot, _textureID); 
+    glBindTexture(GL_TEXTURE_2D, _textureID); 
     // get texture variable from sharder then tell it which slot to use
     glUniform1i(glGetUniformLocation(_shaderID, _variableName), _slot);
 }

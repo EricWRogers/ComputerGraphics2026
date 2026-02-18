@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
     if (InitWindow(&app) > 0)
         return 1;
     
-    Image iconImage = LoadImage("assets/textures/canis_engine_icon.tga");
+    Image iconImage = IOLoadImage("assets/textures/canis_engine_icon.tga");
+    Image containerImage = IOLoadImage("assets/textures/container.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
@@ -93,6 +94,11 @@ int main(int argc, char *argv[])
         Mat4Rotate(&transform, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
         Mat4Scale(&transform, InitVector3(128.0f, 128.0f, 1.0f));
 
+        Matrix4 transform1 = IdentityMatrix4(); // the order is important
+        Mat4Translate(&transform1, InitVector3(450.0f, 450.0f, 0.0f));
+        Mat4Rotate(&transform1, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
+        Mat4Scale(&transform1, InitVector3(128.0f, 128.0f, 1.0f));
+
         // draw our first triangle
         // bind the shader
         BindShader(shaderProgram);
@@ -101,8 +107,12 @@ int main(int argc, char *argv[])
         ShaderSetMatrix4(shaderProgram, "VIEW", view);
         ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
 
-        ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
+        ShaderBindTexture(shaderProgram, containerImage.id, "MAIN_TEXTURE", 0);
         ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
+        DrawModel(model);
+
+        ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
+        ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform1);
         DrawModel(model);
 
         UnBindShader();

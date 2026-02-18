@@ -9,7 +9,7 @@
 #include "vec.h"
 #include "opengl.h"
 
-Image LoadImage(const char* _path)
+Image IOLoadImage(const char* _path)
 {
     Image image;
 
