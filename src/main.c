@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
         Matrix4 transform = IdentityMatrix4(); // the order is important
         Mat4Translate(&transform, InitVector3(300.0f, 300.0f, 0.0f));
         Mat4Rotate(&transform, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
-        float scale = sin(SDL_GetTicks()/1000.0f) * (float)app.windowWidth;
-        Mat4Scale(&transform, InitVector3(scale, scale, 1.0f));
+        float scale = fabs(sin(SDL_GetTicks()/1000.0f)) * (float)app.windowWidth;
+        Mat4Scale(&transform, InitVector3((float)app.windowWidth, (float)app.windowWidth, 1.0f));
 
         Matrix4 transform1 = IdentityMatrix4(); // the order is important
         Mat4Translate(&transform1, InitVector3(450.0f, 450.0f, 0.0f));
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
 
         ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 1.0f, 1.0f, 1.0f));
-        ShaderBindTexture(shaderProgram, containerImage.id, "MAIN_TEXTURE", 0);
+        ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
         ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
         DrawModel(model);
 

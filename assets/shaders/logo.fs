@@ -7,5 +7,5 @@ uniform vec4 TINT;
 
 void main()
 {
-   FragColor = texture(MAIN_TEXTURE, TexCoord) * TINT;// * vec4(ourColor, 1.0);
+   FragColor = texture(MAIN_TEXTURE, (TexCoord * 0.3) + vec2(0.6, 0.4)) * TINT;// * vec4(ourColor, 1.0);
 }
