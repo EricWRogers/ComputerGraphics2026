@@ -45,6 +45,8 @@ Vector2 Vec2Mul(Vector2 _a, f32 _scalar);
 
 Vector3 InitVector3(f32 _x, f32 _y, f32 _z);
 
+Vector4 InitVector4(f32 _x, f32 _y, f32 _z, f32 _w);
+
 bool CampareMatrix4(Matrix4* _a, Matrix4* _b);
 
 Matrix4 IdentityMatrix4();

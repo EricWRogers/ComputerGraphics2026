@@ -68,6 +68,16 @@ Vector3 InitVector3(f32 _x, f32 _y, f32 _z)
     return v;
 }
 
+Vector4 InitVector4(f32 _x, f32 _y, f32 _z, f32 _w)
+{
+    Vector4 v;
+    v.x = _x;
+    v.y = _y;
+    v.z = _z;
+    v.w = _w;
+    return v;
+}
+
 bool CampareMatrix4(Matrix4* _a, Matrix4* _b)
 {
     return memcmp(_a, _b, sizeof(Matrix4)) == 0;

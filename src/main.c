@@ -107,10 +107,12 @@ int main(int argc, char *argv[])
         ShaderSetMatrix4(shaderProgram, "VIEW", view);
         ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
 
+        ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 1.0f, 1.0f, 1.0f));
         ShaderBindTexture(shaderProgram, containerImage.id, "MAIN_TEXTURE", 0);
         ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
         DrawModel(model);
 
+        ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 1.0f, 1.0f, 1.0f));
         ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
         ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform1);
         DrawModel(model);
