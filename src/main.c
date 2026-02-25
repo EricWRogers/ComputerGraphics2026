@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     
     Image iconImage = IOLoadImage("assets/textures/canis_engine_icon.tga");
     Image containerImage = IOLoadImage("assets/textures/container.tga");
+    Image circleImage = IOLoadImage("assets/textures/circle.tga");
+    Image squareImage = IOLoadImage("assets/textures/square.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
@@ -111,7 +113,7 @@ int main(int argc, char *argv[])
         ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
 
         ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 1.0f, 1.0f, 1.0f));
-        ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
+        ShaderBindTexture(shaderProgram, circleImage.id, "MAIN_TEXTURE", 0);
         ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
         DrawModel(model);
 
@@ -128,6 +130,9 @@ int main(int argc, char *argv[])
     FreeModel(model);
 
     free(iconImage.data);
+    free(containerImage.data);
+    free(circleImage.data);
+    free(squareImage.data);
 
     FreeWindow(&app);
 
