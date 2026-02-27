@@ -64,6 +64,11 @@ void SwapWindow(AppContext* _appContext)
     SDL_GL_SwapWindow((SDL_Window*)_appContext->window);
 }
 
+void SetWindowTitle(AppContext* _appContext, const char* _name)
+{
+    SDL_SetWindowTitle((SDL_Window*)_appContext->window, _name);
+}
+
 void ClearWindow()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
