@@ -3,6 +3,8 @@
 #include "cpup/scene.h"
 #include "cpup/model.h"
 
+#include <SDL3/SDL.h>
+
 typedef struct {
     int leftScore;
     int rightScore;
@@ -15,7 +17,24 @@ void BallStart(AppContext* _app, Entity* _entity) {
 }
 
 void BallUpdate(AppContext* _app, Entity* _entity) {
+    const bool* keys = SDL_GetKeyboardState(NULL);
 
+    if (Vec2EqualsZero(_entity->velocity) && keys[SDL_SCANCODE_SPACE])
+    {
+        i32 startingDirection = rand() % 4;
+
+        static Vector2 directions[4] = {
+            (Vector2){0.72f, 0.72f},
+            (Vector2){0.72f, -0.72f},
+            (Vector2){-0.72f, 0.72f},
+            (Vector2){-0.72f, -0.72f},
+        };
+
+        _entity->velocity = Vec2Mul(directions[startingDirection], 50.0f);
+    }
+
+    Vector3 delta = Vec2ToVec3(Vec2Mul(_entity->velocity, _app->deltaTime));
+    _entity->transform.position = Vec3Add(_entity->transform.position, delta);
 }
 
 void BallDraw(AppContext* _app, Entity* _entity) {

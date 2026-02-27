@@ -130,9 +130,9 @@ int main(int argc, char *argv[])
         ClearWindow();
 
         if (app.time != 0.0f)
-            app.deltaTime = (SDL_GetTicksNS() * 1e-6) -  app.time;
+            app.deltaTime = (SDL_GetTicksNS() * 1e-9) -  app.time;
         
-        app.time = SDL_GetTicksNS() * 1e-6;
+        app.time = SDL_GetTicksNS() * 1e-9;
 
         SceneStart(&app, &scene);
 

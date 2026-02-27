@@ -43,7 +43,25 @@ Vector2 Vec2Sub(Vector2 _a, Vector2 _b);
 
 Vector2 Vec2Mul(Vector2 _a, f32 _scalar);
 
+f32 Vec2Distance(Vector2 _a, Vector2 _b);
+
+f32 Vec2Magnitude(Vector2 _v);
+
+Vector2 Vec2Normalized(Vector2 _v);
+
+bool Vec2Equals(Vector2 _a, Vector2 _b);
+
+bool Vec2EqualsZero(Vector2 _v);
+
+Vector3 Vec2ToVec3(Vector2 _v);
+
 Vector3 InitVector3(f32 _x, f32 _y, f32 _z);
+
+Vector3 Vec3Add(Vector3 _a, Vector3 _b);
+
+Vector3 Vec3Sub(Vector3 _a, Vector3 _b);
+
+Vector3 Vec3Mul(Vector3 _a, f32 _scalar);
 
 Vector4 InitVector4(f32 _x, f32 _y, f32 _z, f32 _w);
 

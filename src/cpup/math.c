@@ -59,12 +59,77 @@ Vector2 Vec2Mul(Vector2 _a, f32 _scalar)
     return v;
 }
 
+f32 Vec2Distance(Vector2 _a, Vector2 _b)
+{
+    return sqrtf(powf(_b.x - _a.x, 2.0f) + powf(_b.y - _a.y, 2.0f));
+}
+
+f32 Vec2Magnitude(Vector2 _v)
+{
+    return sqrtf(_v.x * _v.x + _v.y * _v.y);
+}
+
+Vector2 Vec2Normalize(Vector2 _v)
+{
+    float mag = Vec2Magnitude(_v);
+
+    if (mag == 0.0f)
+        return (Vector2){0.0f, 0.0f};
+
+    return (Vector2){
+        _v.x / mag,
+        _v.y / mag
+    };
+}
+
+bool Vec2Equals(Vector2 _a, Vector2 _b)
+{
+    return (_a.x == _b.x && _a.y == _b.y);
+}
+
+bool Vec2EqualsZero(Vector2 _v)
+{
+    return (_v.x == 0.0f && _v.y == 0.0f);
+}
+
+Vector3 Vec2ToVec3(Vector2 _v)
+{
+    return (Vector3){_v.x, _v.y, 0.0f};
+}
+
 Vector3 InitVector3(f32 _x, f32 _y, f32 _z)
 {
     Vector3 v;
     v.x = _x;
     v.y = _y;
     v.z = _z;
+    return v;
+}
+
+Vector3 Vec3Add(Vector3 _a, Vector3 _b)
+{
+    Vector3 v;
+    v.x = _a.x + _b.x;
+    v.y = _a.y + _b.y;
+    v.z = _a.z + _b.z;
+    return v;
+}
+
+Vector3 Vec3Sub(Vector3 _a, Vector3 _b)
+{
+    Vector3 v;
+    v.x = _a.x - _b.x;
+    v.y = _a.y - _b.y;
+    v.z = _a.z - _b.z;
+    return v;
+}
+
+Vector3 Vec3Mul(Vector3 _a, f32 _scalar)
+{
+    Vector3 v;
+    v.x = _a.x * _scalar;
+    v.y = _a.y * _scalar;
+    v.z = _a.z * _scalar;
     return v;
 }
 
