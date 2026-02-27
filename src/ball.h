@@ -33,6 +33,14 @@ void BallUpdate(AppContext* _app, Entity* _entity) {
         _entity->velocity = Vec2Mul(directions[startingDirection], 50.0f);
     }
 
+    // check if ball is heading below the screen
+    if (_entity->transform.position.y - _entity->transform.scale.y * 0.5f <= 0.0f && _entity->velocity.y < 0.0f)
+        _entity->velocity.y *= -1.0f; 
+    
+    // check if ball is heading above the screen
+    if (_entity->transform.position.y + _entity->transform.scale.y * 0.5f >= _app->windowHeight && _entity->velocity.y > 0.0f)
+        _entity->velocity.y *= -1.0f; 
+
     Vector3 delta = Vec2ToVec3(Vec2Mul(_entity->velocity, _app->deltaTime));
     _entity->transform.position = Vec3Add(_entity->transform.position, delta);
 }

@@ -3,6 +3,7 @@
 #endif
 
 #include <math.h>
+#include <time.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,8 @@ AppContext app;
 
 int main(int argc, char *argv[])
 {
+    srand(time(NULL));
+    
     if (InitCanis() > 0)
         return 1;
 
