@@ -19,6 +19,11 @@
 #include "cpup/shader.h"
 #include "cpup/window.h"
 
+#include "cpup/scene.h"
+
+#include "ball.h"
+#include "paddle.h"
+
 AppContext app;
 
 int main(int argc, char *argv[])
@@ -31,6 +36,8 @@ int main(int argc, char *argv[])
     
     if (InitWindow(&app) > 0)
         return 1;
+
+    Scene* scene = SceneInit();
     
     Image iconImage = IOLoadImage("assets/textures/canis_engine_icon.tga");
     Image containerImage = IOLoadImage("assets/textures/container.tga");
@@ -60,6 +67,39 @@ int main(int argc, char *argv[])
     vec_append(&indices, in, 6);
     
     Model model = BuildModel(&vertices, &indices, STATIC_DRAW);
+
+    Entity* ball = Spawn(&scene);
+    ball->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, 0.0f);
+    ball->data = calloc(1, sizeof(Ball));
+    ball->image = &circleImage;
+    ball->model = &model;
+    ball->shaderId = shaderProgram;
+    ball->Start = BallStart;
+    ball->Update = BallUpdate;
+    ball->Draw = BallDraw;
+    ball->OnDestroy = BallOnDestroy;
+
+    Entity* leftPaddle = Spawn(&scene);
+    leftPaddle->transform.position = InitVector3(16.0f, app.windowHeight * 0.5f, 0.0f);
+    leftPaddle->data = calloc(1, sizeof(Paddle));
+    leftPaddle->image = &squareImage;
+    leftPaddle->model = &model;
+    leftPaddle->shaderId = shaderProgram;
+    leftPaddle->Start = PaddleStart;
+    leftPaddle->Update = PaddleUpdate;
+    leftPaddle->Draw = PaddleDraw;
+    leftPaddle->OnDestroy = PaddleOnDestroy;
+
+    Entity* rightPaddle = Spawn(&scene);
+    rightPaddle->transform.position = InitVector3(app.windowWidth - 16.0f, app.windowHeight * 0.5f, 0.0f);
+    rightPaddle->data = calloc(1, sizeof(Paddle));
+    rightPaddle->image = &squareImage;
+    rightPaddle->model = &model;
+    rightPaddle->shaderId = shaderProgram;
+    rightPaddle->Start = PaddleStart;
+    rightPaddle->Update = PaddleUpdate;
+    rightPaddle->Draw = PaddleDraw;
+    rightPaddle->OnDestroy = PaddleOnDestroy;
     
     bool running = true;
     f32 time = 0.0f;
@@ -89,40 +129,20 @@ int main(int argc, char *argv[])
         // render
         ClearWindow();
 
-        Matrix4 projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 100.0f); 
-        Matrix4 view = IdentityMatrix4(); 
-        Mat4Translate(&view, InitVector3(0.0f, 0.0f, -0.5f));
+        if (app.time != 0.0f)
+            app.deltaTime = (SDL_GetTicksNS() * 1e-6) -  app.time;
         
-        Matrix4 transform = IdentityMatrix4(); // the order is important
-        Mat4Translate(&transform, InitVector3(300.0f, 300.0f, 0.0f));
-        Mat4Rotate(&transform, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
-        float scale = fabs(sin(SDL_GetTicks()/1000.0f)) * (float)app.windowWidth;
-        Mat4Scale(&transform, InitVector3((float)app.windowWidth, (float)app.windowWidth, 1.0f));
+        app.time = SDL_GetTicksNS() * 1e-6;
 
-        Matrix4 transform1 = IdentityMatrix4(); // the order is important
-        Mat4Translate(&transform1, InitVector3(450.0f, 450.0f, 0.0f));
-        Mat4Rotate(&transform1, 0.0f * DEG2RAD, InitVector3(0.0f, 0.0f, 1.0f));
-        Mat4Scale(&transform1, InitVector3(128.0f, 128.0f, 1.0f));
+        SceneStart(&app, &scene);
 
-        // draw our first triangle
-        // bind the shader
-        BindShader(shaderProgram);
-        
-        ShaderSetFloat(shaderProgram, "TIME", SDL_GetTicks()/1000.0f);
-        ShaderSetMatrix4(shaderProgram, "VIEW", view);
-        ShaderSetMatrix4(shaderProgram, "PROJECTION", projection);
+        app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 100.0f); 
+        app.view = IdentityMatrix4(); 
+        Mat4Translate(&app.view, InitVector3(0.0f, 0.0f, -0.5f));
 
-        ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 1.0f, 1.0f, 1.0f));
-        ShaderBindTexture(shaderProgram, circleImage.id, "MAIN_TEXTURE", 0);
-        ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform);
-        DrawModel(model);
+        SceneUpdate(&app, &scene);
 
-        //ShaderSetVector4(shaderProgram, "TINT", InitVector4(1.0f, 0.0f, 0.0f, 1.0f));
-        //ShaderBindTexture(shaderProgram, iconImage.id, "MAIN_TEXTURE", 0);
-        //ShaderSetMatrix4(shaderProgram, "TRANSFORM", transform1);
-        //DrawModel(model);
-
-        UnBindShader();
+        SceneDraw(&app, &scene);
 
         SwapWindow(&app);
     }
@@ -133,6 +153,8 @@ int main(int argc, char *argv[])
     free(containerImage.data);
     free(circleImage.data);
     free(squareImage.data);
+
+    SceneFree(&scene);
 
     FreeWindow(&app);
 
