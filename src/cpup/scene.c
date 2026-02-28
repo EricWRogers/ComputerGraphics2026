@@ -66,9 +66,16 @@ Entity* Spawn(Scene** _scene) {
 
 Entity* Find(Scene** _scene, const char* _name) {
     int count = vec_count(&(*_scene)->entities);
+
     for (int i = 0; i < count; i++)
         if (strcmp(_name, (*_scene)->entities[i].name) == 0)
             return &(*_scene)->entities[i];
+    
+    count = vec_count(&(*_scene)->startEntities);
+    
+    for (int i = 0; i < count; i++)
+        if (strcmp(_name, (*_scene)->startEntities[i].name) == 0)
+            return &(*_scene)->startEntities[i];
     
     return NULL;
 }
