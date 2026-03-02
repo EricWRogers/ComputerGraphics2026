@@ -111,27 +111,13 @@ int main(int argc, char *argv[])
     while(running) {
         // imput
         InputManagerNewFrame(&app);
-        printf("FPS: %f Entity Count: %i\n", 1.0f/app.deltaTime, vec_count(&scene->entities));
+        //printf("FPS: %f Entity Count: %i\n", 1.0f/app.deltaTime, vec_count(&scene->entities));
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_EVENT_QUIT)
                 running = false;
-            if (event.type == SDL_EVENT_KEY_UP)
-            {
-                if (event.key.scancode == SDL_SCANCODE_R)
-                {
-                    printf("Load new shader!\n");
-                    u32 newShader = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
-
-                    if (newShader != 0)
-                    {
-                        DeleteShader(shaderProgram);
-                        shaderProgram = newShader;
-                    }
-                }
-            }
         }
 
         // render

@@ -17,17 +17,6 @@ void BallStart(AppContext* _app, Entity* _entity) {
     _entity->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
 
     _entity->transform.scale = InitVector3(32.0f, 32.0f, 1.0f);
-
-    i32 startingDirection = rand() % 4;
-
-        static Vector2 directions[4] = {
-            (Vector2){0.72f, 0.72f},
-            (Vector2){0.72f, -0.72f},
-            (Vector2){-0.72f, 0.72f},
-            (Vector2){-0.72f, -0.72f},
-        };
-
-        _entity->velocity = Vec2Mul(directions[startingDirection], 150.0f);
 }
 
 void BallUpdate(AppContext* _app, Entity* _entity) {
