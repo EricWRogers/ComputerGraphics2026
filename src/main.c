@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     ball->OnDestroy = BallOnDestroy;
 
     Entity* leftPaddle = Spawn(&scene);
+    leftPaddle->name = "leftPaddle";
     leftPaddle->transform.position = InitVector3(16.0f, app.windowHeight * 0.5f, 0.0f);
     leftPaddle->data = calloc(1, sizeof(Paddle));
     leftPaddle->image = &squareImage;
@@ -96,6 +97,7 @@ int main(int argc, char *argv[])
     leftPaddle->OnDestroy = PaddleOnDestroy;
 
     Entity* rightPaddle = Spawn(&scene);
+    rightPaddle->name = "rightPaddle";
     rightPaddle->transform.position = InitVector3(app.windowWidth - 16.0f, app.windowHeight * 0.5f, 0.0f);
     rightPaddle->data = calloc(1, sizeof(Paddle));
     rightPaddle->image = &squareImage;

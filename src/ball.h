@@ -50,6 +50,10 @@ void BallUpdate(AppContext* _app, Entity* _entity) {
 
     Vector3 delta = Vec2ToVec3(Vec2Mul(_entity->velocity, _app->deltaTime));
     _entity->transform.position = Vec3Add(_entity->transform.position, delta);
+
+    Entity* lp = Find(&_app->scene, "leftPaddle");
+    if (lp)
+        printf("LeftPaddle: %s\n", lp->name);
 }
 
 void BallDraw(AppContext* _app, Entity* _entity) {
@@ -77,8 +81,8 @@ void BallOnDestroy(AppContext* _app, Entity* _entity) {
 }
 
 Entity* SpawnBall(AppContext* _app, Entity* _entity) {
-    void** scene = &(_app->scene);
-    Entity* ball = Spawn((Scene**)scene);
+    Scene** scene = &(_app->scene);
+    Entity* ball = Spawn(scene);
     ball->transform.position = InitVector3(_app->windowWidth * 0.5f, _app->windowHeight * 0.5f, 0.0f);
     ball->data = calloc(1, sizeof(Ball));
     ball->image = _entity->image;
