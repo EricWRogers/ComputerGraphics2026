@@ -32,3 +32,8 @@ struct Entity {
     void (*Draw)(AppContext*, Entity*);
     void (*OnDestroy)(AppContext*, Entity*);
 };
+
+#define ENTITY_DATA(Type, varName, entity)  \
+    Type* varName = (Type*)entity->data;    \
+    if (varName == NULL)                    \
+        return;

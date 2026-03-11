@@ -12,10 +12,7 @@ void CubeStart(AppContext* _app, Entity* _entity) {}
 
 void CubeUpdate(AppContext* _app, Entity* _entity)
 {
-    Cube* cubeData = (Cube*)_entity->data;
-
-    if (cubeData == NULL)
-        return;
+    ENTITY_DATA(Cube, cubeData, _entity);
 }
 
 void CubeDraw(AppContext* _app, Entity* _entity)
