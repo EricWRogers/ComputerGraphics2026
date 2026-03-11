@@ -100,6 +100,19 @@ int main(int argc, char *argv[])
     ball->Draw = BallDraw;
     ball->OnDestroy = BallOnDestroy;
 
+    Entity* backGround = Spawn(&scene);
+    backGround->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -1.0f);
+    backGround->transform.scale = InitVector3(app.windowWidth, app.windowHeight, 0.0f);
+    backGround->color = InitVector4(1.0f, 0.0f, 1.0f, 1.0f);
+    backGround->data = calloc(1, sizeof(Ball));
+    backGround->image = &gridImage;
+    backGround->model = &model;
+    backGround->shaderId = shaderProgram;
+    //backGround->Start = BallStart;
+    //backGround->Update = BallUpdate;
+    backGround->Draw = BallDraw;
+    //backGround->OnDestroy = BallOnDestroy;
+
     Entity* leftPaddle = Spawn(&scene);
     leftPaddle->name = "leftPaddle";
     leftPaddle->transform.position = InitVector3(16.0f, app.windowHeight * 0.5f, 0.0f);
