@@ -89,17 +89,6 @@ int main(int argc, char *argv[])
         printf("Warning: Failed to load cube model, using quad mesh for cube entity\n");
     }
 
-    Entity* ball = Spawn(&scene);
-    ball->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, 0.0f);
-    ball->data = calloc(1, sizeof(Ball));
-    ball->image = &circleImage;
-    ball->model = &model;
-    ball->shaderId = shaderProgram;
-    ball->Start = BallStart;
-    ball->Update = BallUpdate;
-    ball->Draw = BallDraw;
-    ball->OnDestroy = BallOnDestroy;
-
     Entity* backGround = Spawn(&scene);
     backGround->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -1.0f);
     backGround->transform.scale = InitVector3(app.windowWidth, app.windowHeight, 0.0f);
@@ -112,6 +101,19 @@ int main(int argc, char *argv[])
     //backGround->Update = BallUpdate;
     backGround->Draw = BallDraw;
     //backGround->OnDestroy = BallOnDestroy;
+
+    Entity* ball = Spawn(&scene);
+    ball->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, 0.0f);
+    ball->data = calloc(1, sizeof(Ball));
+    ball->image = &circleImage;
+    ball->model = &model;
+    ball->shaderId = shaderProgram;
+    ball->Start = BallStart;
+    ball->Update = BallUpdate;
+    ball->Draw = BallDraw;
+    ball->OnDestroy = BallOnDestroy;
+
+    
 
     Entity* leftPaddle = Spawn(&scene);
     leftPaddle->name = "leftPaddle";

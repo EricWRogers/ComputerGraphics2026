@@ -12,5 +12,5 @@ void main()
    if (image.a == 0.0f)
       discard;
    
-   FragColor = texture(MAIN_TEXTURE, TexCoord) * COLOR;// * vec4(ourColor, 1.0);
+   FragColor = image * COLOR;// * vec4(ourColor, 1.0);
 }
