@@ -11,6 +11,7 @@ void PaddleStart(AppContext* _app, Entity* _entity) {
     _entity->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     _entity->transform.rotation = 0.0f;
     _entity->transform.scale = InitVector3(32.0f, 128.0f, 1.0f);
+    printf("PaddleStart\n");
 }
 
 void PaddleUpdate(AppContext* _app, Entity* _entity) {

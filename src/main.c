@@ -25,6 +25,7 @@
 
 #include "ball.h"
 #include "paddle.h"
+#include "cube.h"
 
 AppContext app;
 
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
     Image containerImage = IOLoadImage("assets/textures/container.tga");
     Image circleImage = IOLoadImage("assets/textures/circle.tga");
     Image squareImage = IOLoadImage("assets/textures/square.tga");
+    Image cubeImage = IOLoadImage("assets/textures/cube_base_color.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
@@ -72,6 +74,19 @@ int main(int argc, char *argv[])
     vec_append(&indices, in, 6);
     
     Model model = BuildModel(&vertices, &indices, STATIC_DRAW);
+
+    f32* cubeVertices = NULL;
+    u32* cubeIndices = NULL;
+    Model cubeModel = {0};
+
+    if (LoadOBJ("assets/models/cube.obj", &cubeVertices, &cubeIndices))
+    {
+        cubeModel = BuildModel(&cubeVertices, &cubeIndices, STATIC_DRAW);
+    }
+    else
+    {
+        printf("Warning: Failed to load cube model, using quad mesh for cube entity\n");
+    }
 
     Entity* ball = Spawn(&scene);
     ball->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, 0.0f);
@@ -107,13 +122,27 @@ int main(int argc, char *argv[])
     rightPaddle->Update = PaddleUpdate;
     rightPaddle->Draw = PaddleDraw;
     rightPaddle->OnDestroy = PaddleOnDestroy;
+
+    Entity* cube = Spawn(&scene);
+    cube->name = "cube";
+    cube->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -50.0f);
+    cube->transform.scale = InitVector3(28.0f, 28.0f, 28.0f);
+    cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
+    cube->data = calloc(1, sizeof(Cube));
+    ((Cube*)cube->data)->rotationSpeed = 35.0f;
+    cube->image = &cubeImage;
+    cube->model = &cubeModel;
+    cube->shaderId = shaderProgram;
+    cube->Start = CubeStart;
+    cube->Update = CubeUpdate;
+    cube->Draw = CubeDraw;
+    cube->OnDestroy = CubeOnDestroy;
     
     bool running = true;
     f32 time = 0.0f;
     while(running) {
         // imput
         InputManagerNewFrame(&app);
-        //printf("FPS: %f Entity Count: %i\n", 1.0f/app.deltaTime, vec_count(&scene->entities));
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -144,11 +173,14 @@ int main(int argc, char *argv[])
     }
 
     FreeModel(model);
+    if (cubeVertices)
+        FreeModel(cubeModel);
 
     free(iconImage.data);
     free(containerImage.data);
     free(circleImage.data);
     free(squareImage.data);
+    free(cubeImage.data);
 
     SceneFree(&scene);
 
