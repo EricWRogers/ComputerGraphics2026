@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     Image circleImage = IOLoadImage("assets/textures/circle.tga");
     Image squareImage = IOLoadImage("assets/textures/square.tga");
     Image cubeImage = IOLoadImage("assets/textures/cube_base_color.tga");
+    Image gridImage = IOLoadImage("assets/textures/grid.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
@@ -181,6 +182,7 @@ int main(int argc, char *argv[])
     free(circleImage.data);
     free(squareImage.data);
     free(cubeImage.data);
+    free(gridImage.data);
 
     SceneFree(&scene);
 
