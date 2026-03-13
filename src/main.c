@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     Image squareImage = IOLoadImage("assets/textures/square.tga");
     Image cubeImage = IOLoadImage("assets/textures/cube_base_color.tga");
     Image gridImage = IOLoadImage("assets/textures/grid.tga");
+    Image noiseImage = IOLoadImage("assets/textures/noise.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
     u32* cubeIndices = NULL;
     Model cubeModel = {0};
 
-    if (LoadOBJ("assets/models/cube.obj", &cubeVertices, &cubeIndices))
+    if (LoadOBJ("assets/models/cube_overlaping_uv.obj", &cubeVertices, &cubeIndices))
     {
         cubeModel = BuildModel(&cubeVertices, &cubeIndices, STATIC_DRAW);
     }
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
         printf("Warning: Failed to load cube model, using quad mesh for cube entity\n");
     }
 
-    Entity* backGround = Spawn(&scene);
+    /*Entity* backGround = Spawn(&scene);
     backGround->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -1.0f);
     backGround->transform.scale = InitVector3(app.windowWidth, app.windowHeight, 0.0f);
     backGround->color = InitVector4(1.0f, 0.0f, 1.0f, 1.0f);
@@ -113,8 +114,6 @@ int main(int argc, char *argv[])
     ball->Draw = BallDraw;
     ball->OnDestroy = BallOnDestroy;
 
-    
-
     Entity* leftPaddle = Spawn(&scene);
     leftPaddle->name = "leftPaddle";
     leftPaddle->transform.position = InitVector3(16.0f, app.windowHeight * 0.5f, 0.0f);
@@ -137,16 +136,17 @@ int main(int argc, char *argv[])
     rightPaddle->Start = PaddleStart;
     rightPaddle->Update = PaddleUpdate;
     rightPaddle->Draw = PaddleDraw;
-    rightPaddle->OnDestroy = PaddleOnDestroy;
+    rightPaddle->OnDestroy = PaddleOnDestroy;*/
 
     Entity* cube = Spawn(&scene);
     cube->name = "cube";
-    cube->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -50.0f);
-    cube->transform.scale = InitVector3(28.0f, 28.0f, 28.0f);
+    cube->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -250.0f);
+    cube->transform.scale = InitVector3(200.0f, 200.0f, 200.0f);
     cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     cube->data = calloc(1, sizeof(Cube));
     ((Cube*)cube->data)->rotationSpeed = 35.0f;
-    cube->image = &cubeImage;
+    ((Cube*)cube->data)->noiseImage = &noiseImage;
+    cube->image = &containerImage;
     cube->model = &cubeModel;
     cube->shaderId = shaderProgram;
     cube->Start = CubeStart;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
 
         SceneStart(&app, &scene);
 
-        app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 100.0f); 
+        app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f); 
         app.view = IdentityMatrix4(); 
         Mat4Translate(&app.view, InitVector3(0.0f, 0.0f, -0.5f));
 

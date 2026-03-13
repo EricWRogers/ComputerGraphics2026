@@ -6,6 +6,7 @@
 
 typedef struct {
     f32 rotationSpeed;
+    Image* noiseImage;
 } Cube;
 
 void CubeStart(AppContext* _app, Entity* _entity) {}
