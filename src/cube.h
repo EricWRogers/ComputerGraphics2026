@@ -18,6 +18,8 @@ void CubeUpdate(AppContext* _app, Entity* _entity)
 
 void CubeDraw(AppContext* _app, Entity* _entity)
 {
+    ENTITY_DATA(Cube, cubeData, _entity);
+    
     Matrix4 transform = IdentityMatrix4();
     Mat4Translate(&transform, _entity->transform.position);
     Mat4Rotate(&transform, _entity->transform.rotation * DEG2RAD, InitVector3(1.0f, 1.0f, 0.5f));
@@ -31,6 +33,7 @@ void CubeDraw(AppContext* _app, Entity* _entity)
 
     ShaderSetVector4(_entity->shaderId, "COLOR", _entity->color);
     ShaderBindTexture(_entity->shaderId, _entity->image->id, "MAIN_TEXTURE", 0);
+    ShaderBindTexture(_entity->shaderId, cubeData->noiseImage->id, "NOISE_TEXTURE", 1);
     ShaderSetMatrix4(_entity->shaderId, "TRANSFORM", transform);
     DrawModel(*_entity->model);
 
