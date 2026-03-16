@@ -17,9 +17,17 @@ void main()
    vec2 noiseScale = vec2(5.0f);
    vec2 noiseUV = (TexCoord + noiseOffset) * noiseScale;
    float noisePower = 0.3;
+   float n = texture(NOISE_TEXTURE, noiseUV).r;
 
-   vec4 noise = vec4(vec3(texture(NOISE_TEXTURE, noiseUV).r), 0.0f) * noisePower;
+   vec4 noise = vec4(vec3(n), 0.0f) * noisePower;
+
+   vec3 hole;
+
+   if (distance(TexCoord, vec2(0.5)) < 0.2 + (n*0.1))
+      hole = vec3(0.0);
+   else
+      hole = vec3(1.0);
    
    FragColor = (image * COLOR) - noise;// * vec4(ourColor, 1.0);
-   //FragColor = noise;
+   FragColor *= vec4(hole, 1.0);
 }
