@@ -27,7 +27,7 @@ void main()
 
    vec3 hole;
 
-   if (distance(worldSpacePosition, targetPos) < 0.2 + (n*0.1))
+   if (distance(worldSpacePosition, targetPos) < 40.0 + (n*20.0))
       hole = vec3(0.0);
    else
       hole = vec3(1.0);

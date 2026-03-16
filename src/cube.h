@@ -14,6 +14,8 @@ void CubeStart(AppContext* _app, Entity* _entity) {}
 void CubeUpdate(AppContext* _app, Entity* _entity)
 {
     ENTITY_DATA(Cube, cubeData, _entity);
+
+    _entity->transform.rotation += cubeData->rotationSpeed * _app->deltaTime;
 }
 
 void CubeDraw(AppContext* _app, Entity* _entity)
