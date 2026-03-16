@@ -1,7 +1,10 @@
 #version 330 core
 out vec4 FragColor;
+
 in vec3 ourColor;
 in vec2 TexCoord;
+in vec3 worldSpacePosition;
+
 uniform sampler2D MAIN_TEXTURE;
 uniform sampler2D NOISE_TEXTURE;
 uniform vec4 COLOR;
@@ -9,6 +12,7 @@ uniform vec4 COLOR;
 void main()
 {
    vec4 image = texture(MAIN_TEXTURE, TexCoord);
+   vec3 targetPos = vec3(300.0,300.0,-150.0);
 
    if (image.a == 0.0f)
       discard;
@@ -23,7 +27,7 @@ void main()
 
    vec3 hole;
 
-   if (distance(TexCoord, vec2(0.5)) < 0.2 + (n*0.1))
+   if (distance(worldSpacePosition, targetPos) < 0.2 + (n*0.1))
       hole = vec3(0.0);
    else
       hole = vec3(1.0);
