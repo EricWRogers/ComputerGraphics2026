@@ -26,6 +26,7 @@
 #include "ball.h"
 #include "paddle.h"
 #include "cube.h"
+#include "ghost.h"
 
 AppContext app;
 
@@ -52,10 +53,11 @@ int main(int argc, char *argv[])
     Image cubeImage = IOLoadImage("assets/textures/cube_base_color.tga");
     Image gridImage = IOLoadImage("assets/textures/grid.tga");
     Image noiseImage = IOLoadImage("assets/textures/noise.tga");
+    Image awesomeImage = IOLoadImage("assets/textures/awesome_face.tga");
     
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
-    printf("shaderID: %i\n", shaderProgram);
+    u32 ghostShader = GenerateShaderFromFiles("assets/shaders/ghost.vs", "assets/shaders/ghost.fs");
 
     float ve[] = {
         // positions            // texture coords
@@ -153,6 +155,21 @@ int main(int argc, char *argv[])
     cube->Update = CubeUpdate;
     cube->Draw = CubeDraw;
     cube->OnDestroy = CubeOnDestroy;
+
+    Entity* ghost = Spawn(&scene);
+    ghost->name = "ghost";
+    ghost->transform.position = InitVector3(300.0f, 300.0f, -150.0f);
+    ghost->transform.scale = InitVector3(20.0f, 20.0f, 20.0f);
+    ghost->color = InitVector4(1.0f, 1.0f, 1.0f, 0.2f);
+    ghost->data = calloc(1, sizeof(Ghost));
+    ((Ghost*)ghost->data)->rotationSpeed = 0.0f;
+    ghost->image = &awesomeImage;
+    ghost->model = &cubeModel;
+    ghost->shaderId = ghostShader;
+    ghost->Start = GhostStart;
+    ghost->Update = GhostUpdate;
+    ghost->Draw = GhostDraw;
+    ghost->OnDestroy = GhostOnDestroy;
     
     bool running = true;
     f32 time = 0.0f;
