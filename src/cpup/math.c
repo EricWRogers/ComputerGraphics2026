@@ -273,3 +273,19 @@ Matrix4 Mat4Orthographic(f32 _left, f32 _right, f32 _bottom, f32 _top, f32 _near
 
     return matrix;
 }
+
+Matrix4 Mat4Perspective(f32 _fovRadians, f32 _aspectRatio, f32 _near, f32 _far)
+{
+    Matrix4 matrix = {0};
+
+    f32 f = 1.0f / tanf(_fovRadians * 0.5f);
+    f32 inverseDepth = 1.0f / (_near - _far);
+
+    matrix.m[0] = f / _aspectRatio;
+    matrix.m[5] = f;
+    matrix.m[10] = (_far + _near) * inverseDepth;
+    matrix.m[11] = -1.0f;
+    matrix.m[14] = (2.0f * _far * _near) * inverseDepth;
+
+    return matrix;
+}

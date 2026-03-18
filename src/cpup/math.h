@@ -86,3 +86,5 @@ void Mat4Scale(Matrix4* _mat, Vector3 _scale);
 void Mat4Rotate(Matrix4* _mat, float _radians, Vector3 _axis);
 
 Matrix4 Mat4Orthographic(f32 _left, f32 _right, f32 _bottom, f32 _top, f32 _near, f32 _far);
+
+Matrix4 Mat4Perspective(f32 _fovRadians, f32 _aspectRatio, f32 _near, f32 _far);
