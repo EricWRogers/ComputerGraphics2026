@@ -8,11 +8,12 @@ in vec3 worldSpacePosition;
 uniform sampler2D MAIN_TEXTURE;
 uniform sampler2D NOISE_TEXTURE;
 uniform vec4 COLOR;
+uniform mat4 VIEW;
 
 void main()
 {
    vec4 image = texture(MAIN_TEXTURE, TexCoord);
-   vec3 targetPos = vec3(300.0,300.0,-150.0);
+   vec3 targetPos = vec3(VIEW * vec4(300.0,300.0,-150.0, 1.0f));
 
    if (image.a == 0.0f)
       discard;

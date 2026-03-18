@@ -194,9 +194,14 @@ int main(int argc, char *argv[])
 
         SceneStart(&app, &scene);
 
-        app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f); 
+        //app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f); 
+        
+        f32 fov = 60.0f * DEG2RAD; 
+        f32 aspectR = (f32)app.windowWidth / (f32)app.windowHeight;
+        
+        app.projection = Mat4Perspective(fov, aspectR, 0.1f, 1000.0f);
         app.view = IdentityMatrix4(); 
-        Mat4Translate(&app.view, InitVector3(0.0f, 0.0f, -0.5f));
+        Mat4Translate(&app.view, InitVector3(-(float)app.windowWidth * 0.5f, -(float)app.windowHeight * 0.5f, -0.5f));
 
         SceneUpdate(&app, &scene);
 
