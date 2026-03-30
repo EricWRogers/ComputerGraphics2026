@@ -5,6 +5,7 @@ layout (location = 1) in vec2 aTexCoord;
 out vec3 ourColor;
 out vec2 TexCoord;
 out vec3 viewSpacePosition;
+out vec3 fragPos;
 
 uniform float TIME;
 uniform mat4 TRANSFORM;
@@ -13,6 +14,7 @@ uniform mat4 VIEW;
 
 void main()
 {
+   fragPos = vec3(TRANSFORM * vec4(aPos, 1.0f));
    viewSpacePosition = vec3(VIEW * TRANSFORM * vec4(aPos, 1.0f));
    gl_Position = PROJECTION * VIEW * TRANSFORM * vec4(aPos, 1.0f);
    ourColor = abs(vec3(gl_Position));
