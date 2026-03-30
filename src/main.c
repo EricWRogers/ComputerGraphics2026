@@ -43,6 +43,10 @@ int main(int argc, char *argv[])
     if (InitWindow(&app) > 0)
         return 1;
 
+    app.fogColor = InitVector3(0.2f, 0.3f, 0.3f);
+    app.fogNear = 100.0f;
+    app.fogFar = 350.0f;
+
     Scene* scene = SceneInit();
     app.scene = scene;
     
@@ -185,7 +189,7 @@ int main(int argc, char *argv[])
         }
 
         // render
-        ClearWindow();
+        ClearWindow(&app);
 
         if (app.time != 0.0f)
             app.deltaTime = (SDL_GetTicksNS() * 1e-9) -  app.time;

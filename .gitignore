@@ -10,3 +10,4 @@ SDL3.dll
 build/
 
 .cache/
+.codex

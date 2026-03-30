@@ -9,4 +9,4 @@ void SwapWindow(AppContext* _appContext);
 
 void SetWindowTitle(AppContext* _appContext, const char* _name);
 
-void ClearWindow();
+void ClearWindow(AppContext* _appContext);

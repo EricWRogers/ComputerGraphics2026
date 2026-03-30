@@ -69,8 +69,8 @@ void SetWindowTitle(AppContext* _appContext, const char* _name)
     SDL_SetWindowTitle((SDL_Window*)_appContext->window, _name);
 }
 
-void ClearWindow()
+void ClearWindow(AppContext* _appContext)
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(_appContext->fogColor.x, _appContext->fogColor.y, _appContext->fogColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

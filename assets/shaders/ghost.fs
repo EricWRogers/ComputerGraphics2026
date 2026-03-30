@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in vec3 ourColor;
 in vec2 TexCoord;
-in vec3 worldSpacePosition;
+in vec3 viewSpacePosition;
 
 uniform sampler2D MAIN_TEXTURE;
 uniform vec4 COLOR;

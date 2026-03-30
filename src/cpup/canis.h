@@ -14,6 +14,9 @@ typedef struct AppContext {
     i32 windowHeight;
     Matrix4 projection;
     Matrix4 view;
+    Vector3 fogColor;
+    f32 fogNear;
+    f32 fogFar;
     f32 time;
     f32 deltaTime;
     bool previousKeys[SDL_SCANCODE_COUNT];

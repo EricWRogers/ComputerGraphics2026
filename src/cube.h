@@ -32,6 +32,9 @@ void CubeDraw(AppContext* _app, Entity* _entity)
     ShaderSetFloat(_entity->shaderId, "TIME", _app->time);
     ShaderSetMatrix4(_entity->shaderId, "VIEW", _app->view);
     ShaderSetMatrix4(_entity->shaderId, "PROJECTION", _app->projection);
+    ShaderSetVector3(_entity->shaderId, "FOG_COLOR", _app->fogColor);
+    ShaderSetFloat(_entity->shaderId, "FOG_NEAR", _app->fogNear);
+    ShaderSetFloat(_entity->shaderId, "FOG_FAR", _app->fogFar);
 
     ShaderSetVector4(_entity->shaderId, "COLOR", _entity->color);
     ShaderBindTexture(_entity->shaderId, _entity->image->id, "MAIN_TEXTURE", 0);

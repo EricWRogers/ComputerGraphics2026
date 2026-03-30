@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in vec3 ourColor;
 in vec2 TexCoord;
-in vec3 worldSpacePosition;
+in vec3 viewSpacePosition;
 
 uniform sampler2D MAIN_TEXTURE;
 uniform sampler2D NOISE_TEXTURE;
@@ -28,7 +28,7 @@ void main()
 
    vec3 hole;
 
-   if (distance(worldSpacePosition, targetPos) < 40.0 + (n*20.0))
+   if (distance(viewSpacePosition, targetPos) < 40.0 + (n*20.0))
       hole = vec3(0.0);
    else
       hole = vec3(1.0);
