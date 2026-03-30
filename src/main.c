@@ -39,17 +39,17 @@ int main(int argc, char *argv[])
 
     app.windowWidth = 600;
     app.windowHeight = 600;
-    
+
     if (InitWindow(&app) > 0)
         return 1;
 
     app.fogColor = InitVector3(0.2f, 0.3f, 0.3f);
-    app.fogNear = 100.0f;
-    app.fogFar = 350.0f;
+    app.fogNear = 50.0f;
+    app.fogFar = 250.0f;
 
-    Scene* scene = SceneInit();
+    Scene *scene = SceneInit();
     app.scene = scene;
-    
+
     Image iconImage = IOLoadImage("assets/textures/canis_engine_icon.tga");
     Image containerImage = IOLoadImage("assets/textures/container.tga");
     Image circleImage = IOLoadImage("assets/textures/circle.tga");
@@ -58,33 +58,33 @@ int main(int argc, char *argv[])
     Image gridImage = IOLoadImage("assets/textures/grid.tga");
     Image noiseImage = IOLoadImage("assets/textures/noise.tga");
     Image awesomeImage = IOLoadImage("assets/textures/awesome_face.tga");
-    
+
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
     u32 ghostShader = GenerateShaderFromFiles("assets/shaders/ghost.vs", "assets/shaders/ghost.fs");
 
     float ve[] = {
         // positions            // texture coords
-         0.5f,  0.5f, 0.0f,     1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,     1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,     0.0f, 1.0f  // top left 
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,   // top right
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f   // top left
     };
     unsigned int in[] = {
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
     };
 
-    f32* vertices = vec_init(32, sizeof(f32));
+    f32 *vertices = vec_init(32, sizeof(f32));
     vec_append(&vertices, ve, 32);
 
-    u32* indices = vec_init(6, sizeof(u32));
+    u32 *indices = vec_init(6, sizeof(u32));
     vec_append(&indices, in, 6);
-    
+
     Model model = BuildModel(&vertices, &indices, STATIC_DRAW);
 
-    f32* cubeVertices = NULL;
-    u32* cubeIndices = NULL;
+    f32 *cubeVertices = NULL;
+    u32 *cubeIndices = NULL;
     Model cubeModel = {0};
 
     if (LoadOBJ("assets/models/cube_overlaping_uv.obj", &cubeVertices, &cubeIndices))
@@ -144,14 +144,14 @@ int main(int argc, char *argv[])
     rightPaddle->Draw = PaddleDraw;
     rightPaddle->OnDestroy = PaddleOnDestroy;*/
 
-    Entity* cube = Spawn(&scene);
+    Entity *cube = Spawn(&scene);
     cube->name = "cube";
     cube->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -250.0f);
     cube->transform.scale = InitVector3(200.0f, 200.0f, 200.0f);
     cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     cube->data = calloc(1, sizeof(Cube));
-    ((Cube*)cube->data)->rotationSpeed = 35.0f;
-    ((Cube*)cube->data)->noiseImage = &noiseImage;
+    ((Cube *)cube->data)->rotationSpeed = 35.0f;
+    ((Cube *)cube->data)->noiseImage = &noiseImage;
     cube->image = &containerImage;
     cube->model = &cubeModel;
     cube->shaderId = shaderProgram;
@@ -160,13 +160,13 @@ int main(int argc, char *argv[])
     cube->Draw = CubeDraw;
     cube->OnDestroy = CubeOnDestroy;
 
-    Entity* ghost = Spawn(&scene);
+    Entity *ghost = Spawn(&scene);
     ghost->name = "ghost";
     ghost->transform.position = InitVector3(300.0f, 300.0f, -150.0f);
     ghost->transform.scale = InitVector3(20.0f, 20.0f, 20.0f);
     ghost->color = InitVector4(1.0f, 1.0f, 1.0f, 0.2f);
     ghost->data = calloc(1, sizeof(Ghost));
-    ((Ghost*)ghost->data)->rotationSpeed = 0.0f;
+    ((Ghost *)ghost->data)->rotationSpeed = 0.0f;
     ghost->image = &awesomeImage;
     ghost->model = &cubeModel;
     ghost->shaderId = ghostShader;
@@ -174,10 +174,11 @@ int main(int argc, char *argv[])
     ghost->Update = GhostUpdate;
     ghost->Draw = GhostDraw;
     ghost->OnDestroy = GhostOnDestroy;
-    
+
     bool running = true;
     f32 time = 0.0f;
-    while(running) {
+    while (running)
+    {
         // imput
         InputManagerNewFrame(&app);
 
@@ -192,19 +193,19 @@ int main(int argc, char *argv[])
         ClearWindow(&app);
 
         if (app.time != 0.0f)
-            app.deltaTime = (SDL_GetTicksNS() * 1e-9) -  app.time;
-        
+            app.deltaTime = (SDL_GetTicksNS() * 1e-9) - app.time;
+
         app.time = SDL_GetTicksNS() * 1e-9;
 
         SceneStart(&app, &scene);
 
-        //app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f); 
-        
-        f32 fov = 60.0f * DEG2RAD; 
+        // app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f);
+
+        f32 fov = 60.0f * DEG2RAD;
         f32 aspectR = (f32)app.windowWidth / (f32)app.windowHeight;
-        
+
         app.projection = Mat4Perspective(fov, aspectR, 0.1f, 1000.0f);
-        app.view = IdentityMatrix4(); 
+        app.view = IdentityMatrix4();
         Mat4Translate(&app.view, InitVector3(-(float)app.windowWidth * 0.5f, -(float)app.windowHeight * 0.5f, -0.5f));
 
         SceneUpdate(&app, &scene);

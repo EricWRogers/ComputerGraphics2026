@@ -8,6 +8,9 @@ in vec3 viewSpacePosition;
 uniform sampler2D MAIN_TEXTURE;
 uniform vec4 COLOR;
 uniform mat4 VIEW;
+uniform vec3 FOG_COLOR;
+uniform float FOG_NEAR;
+uniform float FOG_FAR;
 
 void main()
 {
@@ -16,5 +19,11 @@ void main()
    if (image.a == 0.0f)
       discard;
    
-   FragColor = image * COLOR;
+   vec4 color = image * COLOR;
+   float viewDepth = max(0.0f, -viewSpacePosition.z);
+   float fogAmount = (viewDepth - FOG_NEAR) / (FOG_FAR - FOG_NEAR);
+   fogAmount = clamp(fogAmount, 0.0f, 1.0f);
+   vec3 foggedColor = mix(color.rgb, FOG_COLOR, fogAmount);
+
+   FragColor = vec4(foggedColor, color.a);
 }
