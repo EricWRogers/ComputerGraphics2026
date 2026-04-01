@@ -17,7 +17,7 @@ typedef struct {
 } Model;
 
 // Loads OBJ triangles with "v/vt/vn" faces into vertices:
-// [pos.x, pos.y, pos.z, uv.x, uv.y] later that class will use normals
+// [pos.x, pos.y, pos.z, uv.x, uv.y, normal.x, normal.y, normal.z]
 bool LoadOBJ(const char* _path, f32** _vertices, u32** _indices);
 
 Model BuildModel(f32** _vertices, u32** _indices, DrawInfo _info);

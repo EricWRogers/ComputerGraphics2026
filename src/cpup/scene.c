@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "canis.h"
+#include "light.h"
 
 #include <string.h>
 
@@ -41,6 +42,30 @@ void SceneDraw(AppContext* _app, Scene** _scene) {
         if ((*_scene)->entities[i].Draw != NULL) {
             (*_scene)->entities[i].Draw(_app, &(*_scene)->entities[i]);
         }
+    }
+}
+
+void SceneSyncLights(AppContext* _app, Scene** _scene) {
+    _app->lightCount = 0;
+
+    int count = vec_count(&(*_scene)->entities);
+    for (int i = 0; i < count && _app->lightCount < MAX_LIGHTS; i++) {
+        Entity* entity = &(*_scene)->entities[i];
+        if (entity->data == NULL || entity->Draw != LightDraw) {
+            continue;
+        }
+
+        Light* lightData = (Light*)entity->data;
+        if (!lightData->enabled) {
+            continue;
+        }
+
+        SceneLight* light = &_app->lights[_app->lightCount++];
+        light->position = entity->transform.position;
+        light->color = lightData->color;
+        light->intensity = lightData->intensity;
+        light->ambientStrength = lightData->ambientStrength;
+        light->specularStrength = lightData->specularStrength;
     }
 }
 

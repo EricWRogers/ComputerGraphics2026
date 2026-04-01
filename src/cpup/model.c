@@ -141,9 +141,14 @@ bool LoadOBJ(const char* _path, f32** _vertices, u32** _indices)
 
             Vector3 position = tempVertices[key.vertex - 1];
             Vector2 uv = tempUVs[key.uv - 1];
+            Vector3 normal = tempNormals[key.normal - 1];
 
-            f32 packed[5] = { position.x, position.y, position.z, uv.x, uv.y };
-            vec_append(&outVertices, packed, 5);
+            f32 packed[8] = {
+                position.x, position.y, position.z,
+                uv.x, uv.y,
+                normal.x, normal.y, normal.z
+            };
+            vec_append(&outVertices, packed, 8);
             vec_add(&uniqueKeys, &key);
 
             u32 index = vec_count(&uniqueKeys) - 1;
@@ -159,12 +164,14 @@ bool LoadOBJ(const char* _path, f32** _vertices, u32** _indices)
 
     *_vertices = outVertices;
     *_indices = outIndices;
+    loaded = true;
 
     outVertices = NULL;
     outIndices = NULL;
 
 cleanup:
-    fclose(file);
+    if (file != NULL)
+        fclose(file);
 
     if (tempVertices != NULL)
         vec_free(&tempVertices);
@@ -181,7 +188,30 @@ cleanup:
     if (outIndices != NULL)
         vec_free(&outIndices);
 
-    return true;
+    return loaded;
+}
+
+static u32 GetVertexStride(const f32* _vertices, const u32* _indices)
+{
+    if (_vertices == NULL || _indices == NULL || vec_count((void*)&_indices) == 0)
+        return 0;
+
+    u32 maxIndex = 0;
+    for (u32 i = 0; i < vec_count((void*)&_indices); i++)
+    {
+        if (_indices[i] > maxIndex)
+            maxIndex = _indices[i];
+    }
+
+    u32 vertexCount = maxIndex + 1;
+    if (vertexCount == 0)
+        return 0;
+
+    u32 totalFloats = vec_count((void*)&_vertices);
+    if (totalFloats % vertexCount != 0)
+        return 0;
+
+    return totalFloats / vertexCount;
 }
 
 Model BuildModel(f32** _vertices, u32** _indices, DrawInfo _info)
@@ -205,12 +235,30 @@ Model BuildModel(f32** _vertices, u32** _indices, DrawInfo _info)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vec_size_of((void*)&model.indices), model.indices, GL_STATIC_DRAW);
 
+    u32 vertexStride = GetVertexStride(model.vertices, model.indices);
+    if (vertexStride != 5 && vertexStride != 8)
+    {
+        printf("BuildModel: unsupported vertex stride %u, expected 5 or 8 floats per vertex\n", vertexStride);
+        vertexStride = 5;
+    }
+
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexStride * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertexStride * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    // normal attribute when present
+    if (vertexStride >= 8)
+    {
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, vertexStride * sizeof(float), (void*)(5 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
+    else
+    {
+        glDisableVertexAttribArray(2);
+        glVertexAttrib3f(2, 0.0f, 0.0f, 0.0f);
+    }
 
     return model;
 }

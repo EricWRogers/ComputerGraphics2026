@@ -14,6 +14,7 @@ Scene*  SceneInit();
 void    SceneStart(AppContext* _app, Scene** _scene);
 void    SceneUpdate(AppContext* _app, Scene** _scene);
 void    SceneDraw(AppContext* _app, Scene** _scene);
+void    SceneSyncLights(AppContext* _app, Scene** _scene);
 Scene*  SceneFree(Scene** _scene);
 
 Entity* Spawn(Scene** _scene);

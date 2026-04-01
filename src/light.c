@@ -1,27 +1,18 @@
-#pragma once
+#include "light.h"
 
-#include "cpup/canis.h"
-#include "cpup/scene.h"
-#include "cpup/model.h"
+void LightStart(AppContext* _app, Entity* _entity) {}
 
-typedef struct {
-    f32 rotationSpeed;
-    Image* noiseImage;
-} Cube;
-
-void CubeStart(AppContext* _app, Entity* _entity) {}
-
-void CubeUpdate(AppContext* _app, Entity* _entity)
+void LightUpdate(AppContext* _app, Entity* _entity)
 {
-    ENTITY_DATA(Cube, cubeData, _entity);
+    ENTITY_DATA(Light, lightData, _entity);
 
-    _entity->transform.rotation += cubeData->rotationSpeed * _app->deltaTime;
+    _entity->transform.rotation += lightData->rotationSpeed * _app->deltaTime;
 }
 
-void CubeDraw(AppContext* _app, Entity* _entity)
+void LightDraw(AppContext* _app, Entity* _entity)
 {
-    ENTITY_DATA(Cube, cubeData, _entity);
-    
+    ENTITY_DATA(Light, lightData, _entity);
+
     Matrix4 transform = IdentityMatrix4();
     Mat4Translate(&transform, _entity->transform.position);
     Mat4Rotate(&transform, _entity->transform.rotation * DEG2RAD, InitVector3(1.0f, 1.0f, 0.5f));
@@ -32,19 +23,16 @@ void CubeDraw(AppContext* _app, Entity* _entity)
     ShaderSetFloat(_entity->shaderId, "TIME", _app->time);
     ShaderSetMatrix4(_entity->shaderId, "VIEW", _app->view);
     ShaderSetMatrix4(_entity->shaderId, "PROJECTION", _app->projection);
-    ShaderSetSceneLights(_entity->shaderId, _app);
-    ShaderSetVector3(_entity->shaderId, "VIEW_POS", _app->cameraPosition);
     ShaderSetVector3(_entity->shaderId, "FOG_COLOR", _app->fogColor);
     ShaderSetFloat(_entity->shaderId, "FOG_NEAR", _app->fogNear);
     ShaderSetFloat(_entity->shaderId, "FOG_FAR", _app->fogFar);
 
     ShaderSetVector4(_entity->shaderId, "COLOR", _entity->color);
     ShaderBindTexture(_entity->shaderId, _entity->image->id, "MAIN_TEXTURE", 0);
-    ShaderBindTexture(_entity->shaderId, cubeData->noiseImage->id, "NOISE_TEXTURE", 1);
     ShaderSetMatrix4(_entity->shaderId, "TRANSFORM", transform);
     DrawModel(*_entity->model);
 
     UnBindShader();
 }
 
-void CubeOnDestroy(AppContext* _app, Entity* _entity) {}
+void LightOnDestroy(AppContext* _app, Entity* _entity) {}

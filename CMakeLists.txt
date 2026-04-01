@@ -44,8 +44,8 @@ endif()
 
 add_subdirectory(external/SDL)
 
-file(GLOB_RECURSE SRC_SOURCES src/*.c)
-file(GLOB_RECURSE SRC_HEADERS src/*.h)
+file(GLOB_RECURSE SRC_SOURCES CONFIGURE_DEPENDS src/*.c)
+file(GLOB_RECURSE SRC_HEADERS CONFIGURE_DEPENDS src/*.h)
 
 add_executable(${PROJECT_NAME} ${SRC_SOURCES} ${SRC_HEADERS})
 

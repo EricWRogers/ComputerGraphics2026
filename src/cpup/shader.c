@@ -1,5 +1,6 @@
 #include "shader.h"
 
+#include "canis.h"
 #include "io.h"
 #include "opengl.h"
 
@@ -99,6 +100,13 @@ void ShaderBindTexture(u32 _shaderID, u32 _textureID, const char* _variableName,
     glUniform1i(glGetUniformLocation(_shaderID, _variableName), _slot);
 }
 
+void ShaderSetInt(u32 _shaderID, const char* _variableName, i32 _value)
+{
+    i32 location = glGetUniformLocation(_shaderID, _variableName);
+    if (location > -1)
+        glUniform1i(location, _value);
+}
+
 void ShaderSetFloat(u32 _shaderID, const char* _variableName, f32 _value)
 {
     i32 location = glGetUniformLocation(_shaderID, _variableName);
@@ -132,4 +140,29 @@ void ShaderSetMatrix4(u32 _shaderID, const char* _variableName, Matrix4 _mat)
     i32 location = glGetUniformLocation(_shaderID, _variableName);
     if (location > -1)
         glUniformMatrix4fv(location, 1, GL_FALSE, _mat.m);
+}
+
+void ShaderSetSceneLights(u32 _shaderID, const AppContext* _app)
+{
+    ShaderSetInt(_shaderID, "LIGHT_COUNT", _app->lightCount);
+
+    for (i32 i = 0; i < _app->lightCount; i++)
+    {
+        char uniformName[64];
+
+        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].position", i);
+        ShaderSetVector3(_shaderID, uniformName, _app->lights[i].position);
+
+        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].color", i);
+        ShaderSetVector3(_shaderID, uniformName, _app->lights[i].color);
+
+        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].intensity", i);
+        ShaderSetFloat(_shaderID, uniformName, _app->lights[i].intensity);
+
+        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].ambientStrength", i);
+        ShaderSetFloat(_shaderID, uniformName, _app->lights[i].ambientStrength);
+
+        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].specularStrength", i);
+        ShaderSetFloat(_shaderID, uniformName, _app->lights[i].specularStrength);
+    }
 }

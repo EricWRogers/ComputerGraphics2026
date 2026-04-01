@@ -23,12 +23,44 @@
 
 #include "cpup/scene.h"
 
-#include "ball.h"
-#include "paddle.h"
 #include "cube.h"
-#include "ghost.h"
+#include "light.h"
 
 AppContext app;
+
+static Entity* SpawnPointLight(
+    Scene** _scene,
+    Model* _model,
+    u32 _shaderId,
+    Image* _image,
+    const char* _name,
+    Vector3 _position,
+    Vector3 _lightColor,
+    f32 _intensity)
+{
+    Entity* light = Spawn(_scene);
+    Light* lightData = calloc(1, sizeof(Light));
+
+    light->name = (char*)_name;
+    light->transform.position = _position;
+    light->transform.scale = InitVector3(5.0f, 5.0f, 5.0f);
+    light->color = InitVector4(_lightColor.x, _lightColor.y, _lightColor.z, 1.0f);
+    lightData->enabled = true;
+    lightData->color = _lightColor;
+    lightData->intensity = _intensity;
+    lightData->ambientStrength = 0.04f;
+    lightData->specularStrength = 0.3f;
+    lightData->rotationSpeed = 0.0f;
+    light->data = lightData;
+    light->image = _image;
+    light->model = _model;
+    light->shaderId = _shaderId;
+    light->Start = LightStart;
+    light->Update = LightUpdate;
+    light->Draw = LightDraw;
+    light->OnDestroy = LightOnDestroy;
+    return light;
+}
 
 int main(int argc, char *argv[])
 {
@@ -44,7 +76,7 @@ int main(int argc, char *argv[])
         return 1;
 
     app.fogColor = InitVector3(0.2f, 0.3f, 0.3f);
-    app.fogNear = 50.0f;
+    app.fogNear = 100.0f;
     app.fogFar = 250.0f;
 
     Scene *scene = SceneInit();
@@ -96,58 +128,10 @@ int main(int argc, char *argv[])
         printf("Warning: Failed to load cube model, using quad mesh for cube entity\n");
     }
 
-    /*Entity* backGround = Spawn(&scene);
-    backGround->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -1.0f);
-    backGround->transform.scale = InitVector3(app.windowWidth, app.windowHeight, 0.0f);
-    backGround->color = InitVector4(1.0f, 0.0f, 1.0f, 1.0f);
-    backGround->data = calloc(1, sizeof(Ball));
-    backGround->image = &gridImage;
-    backGround->model = &model;
-    backGround->shaderId = shaderProgram;
-    //backGround->Start = BallStart;
-    //backGround->Update = BallUpdate;
-    backGround->Draw = BallDraw;
-    //backGround->OnDestroy = BallOnDestroy;
-
-    Entity* ball = Spawn(&scene);
-    ball->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, 0.0f);
-    ball->data = calloc(1, sizeof(Ball));
-    ball->image = &circleImage;
-    ball->model = &model;
-    ball->shaderId = shaderProgram;
-    ball->Start = BallStart;
-    ball->Update = BallUpdate;
-    ball->Draw = BallDraw;
-    ball->OnDestroy = BallOnDestroy;
-
-    Entity* leftPaddle = Spawn(&scene);
-    leftPaddle->name = "leftPaddle";
-    leftPaddle->transform.position = InitVector3(16.0f, app.windowHeight * 0.5f, 0.0f);
-    leftPaddle->data = calloc(1, sizeof(Paddle));
-    leftPaddle->image = &squareImage;
-    leftPaddle->model = &model;
-    leftPaddle->shaderId = shaderProgram;
-    leftPaddle->Start = PaddleStart;
-    leftPaddle->Update = PaddleUpdate;
-    leftPaddle->Draw = PaddleDraw;
-    leftPaddle->OnDestroy = PaddleOnDestroy;
-
-    Entity* rightPaddle = Spawn(&scene);
-    rightPaddle->name = "rightPaddle";
-    rightPaddle->transform.position = InitVector3(app.windowWidth - 16.0f, app.windowHeight * 0.5f, 0.0f);
-    rightPaddle->data = calloc(1, sizeof(Paddle));
-    rightPaddle->image = &squareImage;
-    rightPaddle->model = &model;
-    rightPaddle->shaderId = shaderProgram;
-    rightPaddle->Start = PaddleStart;
-    rightPaddle->Update = PaddleUpdate;
-    rightPaddle->Draw = PaddleDraw;
-    rightPaddle->OnDestroy = PaddleOnDestroy;*/
-
     Entity *cube = Spawn(&scene);
     cube->name = "cube";
     cube->transform.position = InitVector3(app.windowWidth * 0.5f, app.windowHeight * 0.5f, -250.0f);
-    cube->transform.scale = InitVector3(200.0f, 200.0f, 200.0f);
+    cube->transform.scale = InitVector3(180.0f, 180.0f, 180.0f);
     cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     cube->data = calloc(1, sizeof(Cube));
     ((Cube *)cube->data)->rotationSpeed = 35.0f;
@@ -160,20 +144,45 @@ int main(int argc, char *argv[])
     cube->Draw = CubeDraw;
     cube->OnDestroy = CubeOnDestroy;
 
-    Entity *ghost = Spawn(&scene);
-    ghost->name = "ghost";
-    ghost->transform.position = InitVector3(300.0f, 300.0f, -150.0f);
-    ghost->transform.scale = InitVector3(20.0f, 20.0f, 20.0f);
-    ghost->color = InitVector4(1.0f, 1.0f, 1.0f, 0.2f);
-    ghost->data = calloc(1, sizeof(Ghost));
-    ((Ghost *)ghost->data)->rotationSpeed = 0.0f;
-    ghost->image = &awesomeImage;
-    ghost->model = &cubeModel;
-    ghost->shaderId = ghostShader;
-    ghost->Start = GhostStart;
-    ghost->Update = GhostUpdate;
-    ghost->Draw = GhostDraw;
-    ghost->OnDestroy = GhostOnDestroy;
+    SpawnPointLight(
+        &scene,
+        &cubeModel,
+        ghostShader,
+        &circleImage,
+        "warmLight",
+        InitVector3(420.0f, 300.0f, -140.0f),
+        InitVector3(3.0f, 0.82f, 0.52f),
+        3.0f);
+
+    SpawnPointLight(
+        &scene,
+        &cubeModel,
+        ghostShader,
+        &circleImage,
+        "cyanLight",
+        InitVector3(300.0f, 300.0f, -120.0f),
+        InitVector3(0.35f, 0.85f, 3.0f),
+        3.0f);
+
+    SpawnPointLight(
+        &scene,
+        &cubeModel,
+        ghostShader,
+        &circleImage,
+        "magentaLight",
+        InitVector3(180.0f, 300.0f, -140.0f),
+        InitVector3(1.0f, 0.35f, 0.80f),
+        3.0f);
+
+    SpawnPointLight(
+        &scene,
+        &cubeModel,
+        ghostShader,
+        &circleImage,
+        "greenLight",
+        InitVector3(300.0f, 420.0f, -120.0f),
+        InitVector3(0.45f, 1.0f, 0.55f),
+        3.0f);
 
     bool running = true;
     f32 time = 0.0f;
@@ -205,10 +214,12 @@ int main(int argc, char *argv[])
         f32 aspectR = (f32)app.windowWidth / (f32)app.windowHeight;
 
         app.projection = Mat4Perspective(fov, aspectR, 0.1f, 1000.0f);
+        app.cameraPosition = InitVector3((float)app.windowWidth * 0.5f, (float)app.windowHeight * 0.5f, 0.5f);
         app.view = IdentityMatrix4();
-        Mat4Translate(&app.view, InitVector3(-(float)app.windowWidth * 0.5f, -(float)app.windowHeight * 0.5f, -0.5f));
+        Mat4Translate(&app.view, Vec3Mul(app.cameraPosition, -1.0f));
 
         SceneUpdate(&app, &scene);
+        SceneSyncLights(&app, &scene);
 
         SceneDraw(&app, &scene);
 

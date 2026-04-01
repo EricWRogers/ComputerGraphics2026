@@ -6,6 +6,16 @@
 
 typedef struct Scene Scene;
 
+enum { MAX_LIGHTS = 8 };
+
+typedef struct {
+    Vector3 position;
+    Vector3 color;
+    f32 intensity;
+    f32 ambientStrength;
+    f32 specularStrength;
+} SceneLight;
+
 typedef struct AppContext {
     void* window;
     void* glContext;
@@ -14,6 +24,9 @@ typedef struct AppContext {
     i32 windowHeight;
     Matrix4 projection;
     Matrix4 view;
+    Vector3 cameraPosition;
+    SceneLight lights[MAX_LIGHTS];
+    i32 lightCount;
     Vector3 fogColor;
     f32 fogNear;
     f32 fogFar;
