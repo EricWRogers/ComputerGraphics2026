@@ -9,6 +9,13 @@ typedef struct {
     Vector3 scale;
 } Transform;
 
+typedef struct {
+   Vector3 ambient;
+   Vector3 diffuse;
+   Vector3 specular;
+   float shininess;
+} Material;
+
 struct Image;
 struct Shader;
 typedef struct AppContext AppContext;
@@ -19,6 +26,7 @@ struct Entity {
     int         id;
     char*       name;
     Transform   transform;
+    Material    material;
     u32         shaderId;
     Image*      image;
     Model*      model;

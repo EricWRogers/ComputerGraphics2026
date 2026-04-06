@@ -42,6 +42,12 @@ void CubeDraw(AppContext* _app, Entity* _entity)
     ShaderBindTexture(_entity->shaderId, _entity->image->id, "MAIN_TEXTURE", 0);
     ShaderBindTexture(_entity->shaderId, cubeData->noiseImage->id, "NOISE_TEXTURE", 1);
     ShaderSetMatrix4(_entity->shaderId, "TRANSFORM", transform);
+
+    ShaderSetVector3(_entity->shaderId, "material.ambient", _entity->material.ambient);
+    ShaderSetVector3(_entity->shaderId, "material.diffuse", _entity->material.diffuse);
+    ShaderSetVector3(_entity->shaderId, "material.specular", _entity->material.specular);
+    ShaderSetFloat(_entity->shaderId, "material.shininess", _entity->material.shininess);
+    
     DrawModel(*_entity->model);
 
     UnBindShader();
