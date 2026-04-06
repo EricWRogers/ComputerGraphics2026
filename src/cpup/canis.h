@@ -12,8 +12,6 @@ typedef struct {
     Vector3 position;
     Vector3 color;
     f32 intensity;
-    f32 ambientStrength;
-    f32 specularStrength;
 } SceneLight;
 
 typedef struct AppContext {

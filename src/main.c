@@ -48,8 +48,6 @@ static Entity* SpawnPointLight(
     lightData->enabled = true;
     lightData->color = _lightColor;
     lightData->intensity = _intensity;
-    lightData->ambientStrength = 0.04f;
-    lightData->specularStrength = 0.3f;
     lightData->rotationSpeed = 0.0f;
     light->data = lightData;
     light->image = _image;
@@ -152,7 +150,7 @@ int main(int argc, char *argv[])
         "warmLight",
         InitVector3(420.0f, 300.0f, -140.0f),
         InitVector3(1.0f, 0.82f, 0.52f),
-        3.0f);
+        1.0f);
 
     SpawnPointLight(
         &scene,
@@ -162,7 +160,7 @@ int main(int argc, char *argv[])
         "cyanLight",
         InitVector3(300.0f, 300.0f, -120.0f),
         InitVector3(0.0f, 0.0f, 1.0f),
-        3.0f);
+        1.0f);
 
     SpawnPointLight(
         &scene,
@@ -172,7 +170,7 @@ int main(int argc, char *argv[])
         "magentaLight",
         InitVector3(180.0f, 300.0f, -140.0f),
         InitVector3(1.0f, 0.35f, 0.80f),
-        3.0f);
+        1.0f);
 
     SpawnPointLight(
         &scene,
@@ -182,7 +180,7 @@ int main(int argc, char *argv[])
         "greenLight",
         InitVector3(300.0f, 420.0f, -120.0f),
         InitVector3(0.45f, 1.0f, 0.55f),
-        3.0f);
+        1.0f);
 
     bool running = true;
     f32 time = 0.0f;

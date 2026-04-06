@@ -10,8 +10,6 @@ typedef struct {
     bool enabled;
     Vector3 color;
     f32 intensity;
-    f32 ambientStrength;
-    f32 specularStrength;
     f32 rotationSpeed;
 } Light;
 

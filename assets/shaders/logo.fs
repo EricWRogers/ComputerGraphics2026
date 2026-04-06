@@ -13,8 +13,6 @@ struct Light
    vec3 position;
    vec3 color;
    float intensity;
-   float ambientStrength;
-   float specularStrength;
 };
 
 uniform sampler2D MAIN_TEXTURE;
@@ -54,15 +52,15 @@ void main()
    for (int i = 0; i < LIGHT_COUNT; i++)
    {
       vec3 lightColor = LIGHTS[i].color * LIGHTS[i].intensity;
-      vec3 ambient = LIGHTS[i].ambientStrength * lightColor;
+      vec3 ambient = lightColor;
 
       vec3 lightDir = normalize(LIGHTS[i].position - fragPos);
       float diff = max(dot(norm, lightDir), 0.0f);
-      vec3 diffuse = diff * lightColor;
+      vec3 diffuse = lightColor * diff;
 
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32.0f);
-      vec3 specular = LIGHTS[i].specularStrength * spec * lightColor;
+      vec3 specular = lightColor * spec;
 
       lighting += ambient + diffuse + specular;
    }

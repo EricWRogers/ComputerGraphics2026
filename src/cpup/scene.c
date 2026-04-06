@@ -64,8 +64,6 @@ void SceneSyncLights(AppContext* _app, Scene** _scene) {
         light->position = entity->transform.position;
         light->color = lightData->color;
         light->intensity = lightData->intensity;
-        light->ambientStrength = lightData->ambientStrength;
-        light->specularStrength = lightData->specularStrength;
     }
 }
 

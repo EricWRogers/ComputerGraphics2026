@@ -158,11 +158,5 @@ void ShaderSetSceneLights(u32 _shaderID, const AppContext* _app)
 
         snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].intensity", i);
         ShaderSetFloat(_shaderID, uniformName, _app->lights[i].intensity);
-
-        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].ambientStrength", i);
-        ShaderSetFloat(_shaderID, uniformName, _app->lights[i].ambientStrength);
-
-        snprintf(uniformName, sizeof(uniformName), "LIGHTS[%d].specularStrength", i);
-        ShaderSetFloat(_shaderID, uniformName, _app->lights[i].specularStrength);
     }
 }
