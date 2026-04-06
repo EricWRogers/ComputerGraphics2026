@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
         &circleImage,
         "warmLight",
         InitVector3(420.0f, 300.0f, -140.0f),
-        InitVector3(3.0f, 0.82f, 0.52f),
+        InitVector3(1.0f, 0.82f, 0.52f),
         3.0f);
 
     SpawnPointLight(
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
         &circleImage,
         "cyanLight",
         InitVector3(300.0f, 300.0f, -120.0f),
-        InitVector3(0.35f, 0.85f, 3.0f),
+        InitVector3(0.0f, 0.0f, 1.0f),
         3.0f);
 
     SpawnPointLight(

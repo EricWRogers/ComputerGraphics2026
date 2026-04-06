@@ -64,8 +64,6 @@ void main()
       float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32.0f);
       vec3 specular = LIGHTS[i].specularStrength * spec * lightColor;
 
-      vec3 targetPos = vec3(VIEW * vec4(LIGHTS[i].position, 1.0f));
-
       lighting += ambient + diffuse + specular;
    }
 
