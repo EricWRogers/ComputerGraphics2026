@@ -15,12 +15,21 @@ struct Light
    float intensity;
 };
 
+struct Material
+{
+   vec3 ambient;
+   vec3 diffuse;
+   vec3 specular;
+   float shininess;
+};
+
 uniform sampler2D MAIN_TEXTURE;
 uniform sampler2D NOISE_TEXTURE;
 uniform vec4 COLOR;
 uniform mat4 VIEW;
 uniform int LIGHT_COUNT;
 uniform Light LIGHTS[MAX_LIGHTS];
+uniform Material material;
 uniform vec3 VIEW_POS;
 uniform vec3 FOG_COLOR;
 uniform float FOG_NEAR;
@@ -52,15 +61,15 @@ void main()
    for (int i = 0; i < LIGHT_COUNT; i++)
    {
       vec3 lightColor = LIGHTS[i].color * LIGHTS[i].intensity;
-      vec3 ambient = lightColor;
+      vec3 ambient = lightColor * material.ambient;
 
       vec3 lightDir = normalize(LIGHTS[i].position - fragPos);
       float diff = max(dot(norm, lightDir), 0.0f);
-      vec3 diffuse = lightColor * diff;
+      vec3 diffuse = lightColor * (diff * material.diffuse);
 
       vec3 reflectDir = reflect(-lightDir, norm);
-      float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32.0f);
-      vec3 specular = lightColor * spec;
+      float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+      vec3 specular = lightColor * (spec * material.specular);
 
       lighting += ambient + diffuse + specular;
    }
