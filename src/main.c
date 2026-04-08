@@ -17,6 +17,7 @@
 #include "cpup/math.h"
 #include "cpup/types.h"
 #include "cpup/model.h"
+#include "cpup/postprocess.h"
 #include "cpup/shader.h"
 #include "cpup/window.h"
 #include "cpup/inputmanager.h"
@@ -92,6 +93,11 @@ int main(int argc, char *argv[])
     // build and compile our shader program
     u32 shaderProgram = GenerateShaderFromFiles("assets/shaders/logo.vs", "assets/shaders/logo.fs");
     u32 ghostShader = GenerateShaderFromFiles("assets/shaders/ghost.vs", "assets/shaders/ghost.fs");
+    u32 postProcessShader = GenerateShaderFromFiles("assets/shaders/post_process.vs", "assets/shaders/post_process.fs");
+    app.postProcessShaderId = postProcessShader;
+
+    if (InitPostProcess(&app) > 0)
+        return 1;
 
     float ve[] = {
         // positions            // texture coords
@@ -187,7 +193,6 @@ int main(int argc, char *argv[])
         1.0f);
 
     bool running = true;
-    f32 time = 0.0f;
     while (running)
     {
         // imput
@@ -198,15 +203,22 @@ int main(int argc, char *argv[])
         {
             if (event.type == SDL_EVENT_QUIT)
                 running = false;
-        }
 
-        // render
-        ClearWindow(&app);
+            if (event.type == SDL_EVENT_WINDOW_RESIZED ||
+                event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED)
+            {
+                if (UpdateWindowSize(&app))
+                    ResizePostProcess(&app, app.windowWidth, app.windowHeight);
+            }
+        }
 
         if (app.time != 0.0f)
             app.deltaTime = (SDL_GetTicksNS() * 1e-9) - app.time;
 
         app.time = SDL_GetTicksNS() * 1e-9;
+
+        if (app.windowWidth <= 0 || app.windowHeight <= 0)
+            continue;
 
         SceneStart(&app, &scene);
 
@@ -223,7 +235,10 @@ int main(int argc, char *argv[])
         SceneUpdate(&app, &scene);
         SceneSyncLights(&app, &scene);
 
+        BeginPostProcess(&app);
+        ClearWindow(&app);
         SceneDraw(&app, &scene);
+        EndPostProcess(&app);
 
         SwapWindow(&app);
     }
@@ -238,11 +253,16 @@ int main(int argc, char *argv[])
     free(squareImage.data);
     free(cubeImage.data);
     free(gridImage.data);
+    free(noiseImage.data);
+    free(awesomeImage.data);
 
     SceneFree(&scene);
 
-    FreeWindow(&app);
-
+    FreePostProcess(&app);
+    DeleteShader(postProcessShader);
+    DeleteShader(ghostShader);
     DeleteShader(shaderProgram);
+
+    FreeWindow(&app);
     return 0;
 }

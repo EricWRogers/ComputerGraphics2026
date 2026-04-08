@@ -78,7 +78,7 @@ u32 GenerateShader(const char* _vertexShaderSource, const char* _fragmentShaderS
 
 void DeleteShader(u32 _shaderID)
 {
-    glDeleteShader(_shaderID);
+    glDeleteProgram(_shaderID);
 }
 
 void BindShader(u32 _shaderID)

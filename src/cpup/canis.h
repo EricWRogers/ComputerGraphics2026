@@ -20,6 +20,10 @@ typedef struct AppContext {
     Scene* scene;
     i32 windowWidth;
     i32 windowHeight;
+    u32 postProcessShaderId;
+    u32 postProcessFramebufferId;
+    u32 postProcessColorTextureId;
+    u32 postProcessDepthStencilRenderbufferId;
     Matrix4 projection;
     Matrix4 view;
     Vector3 cameraPosition;

@@ -4,6 +4,24 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_log.h>
 
+bool UpdateWindowSize(AppContext* _appContext)
+{
+    if (_appContext == NULL || _appContext->window == NULL)
+        return false;
+
+    int width = 0;
+    int height = 0;
+    if (!SDL_GetWindowSizeInPixels((SDL_Window*)_appContext->window, &width, &height))
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to query window size: %s", SDL_GetError());
+        return false;
+    }
+
+    _appContext->windowWidth = width;
+    _appContext->windowHeight = height;
+    return true;
+}
+
 i32 InitWindow(AppContext* _appContext)
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -44,6 +62,11 @@ i32 InitWindow(AppContext* _appContext)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_ALPHA);
     glDepthFunc(GL_LESS);
+
+    if (!UpdateWindowSize(_appContext))
+        return 1;
+
+    glViewport(0, 0, _appContext->windowWidth, _appContext->windowHeight);
 
     return 0;
 }
