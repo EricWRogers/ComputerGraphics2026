@@ -45,7 +45,7 @@ void CubeDraw(AppContext* _app, Entity* _entity)
 
     ShaderSetVector3(_entity->shaderId, "material.ambient", _entity->material.ambient);
     ShaderSetVector3(_entity->shaderId, "material.diffuse", _entity->material.diffuse);
-    ShaderSetVector3(_entity->shaderId, "material.specular", _entity->material.specular);
+    ShaderBindTexture(_entity->shaderId, _entity->material.specular->id, "material.specular", 2);
     ShaderSetFloat(_entity->shaderId, "material.shininess", _entity->material.shininess);
     
     DrawModel(*_entity->model);

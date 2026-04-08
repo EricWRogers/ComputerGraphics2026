@@ -12,7 +12,7 @@ typedef struct {
 typedef struct {
    Vector3 ambient;
    Vector3 diffuse;
-   Vector3 specular;
+   Image* specular;
    float shininess;
 } Material;
 

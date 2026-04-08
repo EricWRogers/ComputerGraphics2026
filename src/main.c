@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
     app.scene = scene;
 
     Image iconImage = IOLoadImage("assets/textures/canis_engine_icon.tga");
-    Image containerImage = IOLoadImage("assets/textures/container.tga");
+    Image containerImage = IOLoadImage("assets/textures/container2.tga");
+    Image containerSpecularImage = IOLoadImage("assets/textures/container2_specular.tga");
     Image circleImage = IOLoadImage("assets/textures/circle.tga");
     Image squareImage = IOLoadImage("assets/textures/square.tga");
     Image cubeImage = IOLoadImage("assets/textures/cube_base_color.tga");
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
     cube->transform.scale = InitVector3(180.0f, 180.0f, 180.0f);
     cube->material.ambient = InitVector3(0.05f,0.05f,0.05f);
     cube->material.diffuse = InitVector3(0.5f,0.5f,0.5f);
-    cube->material.specular = InitVector3(0.7f,0.7f,0.7f);
+    cube->material.specular = &containerSpecularImage;
     cube->material.shininess = 64.0f;
     cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     cube->data = calloc(1, sizeof(Cube));
@@ -221,8 +222,6 @@ int main(int argc, char *argv[])
             continue;
 
         SceneStart(&app, &scene);
-
-        // app.projection = Mat4Orthographic(0.0f, (float)app.windowWidth, 0.0f, (float)app.windowHeight, 0.001f, 1000.0f);
 
         f32 fov = 60.0f * DEG2RAD;
         f32 aspectR = (f32)app.windowWidth / (f32)app.windowHeight;
