@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     cube->material.ambient = InitVector3(0.05f,0.05f,0.05f);
     cube->material.diffuse = InitVector3(0.5f,0.5f,0.5f);
     cube->material.specular = InitVector3(0.7f,0.7f,0.7f);
-    cube->material.shininess = 0.078125f;
+    cube->material.shininess = 64.0f;
     cube->color = InitVector4(1.0f, 1.0f, 1.0f, 1.0f);
     cube->data = calloc(1, sizeof(Cube));
     ((Cube *)cube->data)->rotationSpeed = 35.0f;
