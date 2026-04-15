@@ -63,13 +63,15 @@ void main()
       vec3 lightColor = LIGHTS[i].color * LIGHTS[i].intensity;
       vec3 ambient = lightColor * material.ambient;
 
+      vec3 specImage = texture(material.specular, TexCoord).rgb;
+
       vec3 lightDir = normalize(LIGHTS[i].position - fragPos);
       float diff = max(dot(norm, lightDir), 0.0f);
       vec3 diffuse = lightColor * (diff * material.diffuse);
 
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-      vec3 specular = lightColor * (spec * material.specular);
+      vec3 specular = lightColor * (spec * specImage);
 
       lighting += ambient + diffuse + specular;
    }

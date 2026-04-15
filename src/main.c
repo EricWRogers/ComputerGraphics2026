@@ -45,7 +45,7 @@ static Entity* SpawnPointLight(
     light->name = (char*)_name;
     light->transform.position = _position;
     light->transform.scale = InitVector3(5.0f, 5.0f, 5.0f);
-    light->color = InitVector4(_lightColor.x, _lightColor.y, _lightColor.z, 1.0f);
+    light->color = InitVector4(_lightColor.x*10.0f, _lightColor.y*10.0f, _lightColor.z*10.0f, 1.0f);
     lightData->enabled = true;
     lightData->color = _lightColor;
     lightData->intensity = _intensity;
