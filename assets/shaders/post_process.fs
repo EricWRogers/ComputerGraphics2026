@@ -11,9 +11,9 @@ const float BLOOM_THRESHOLD = 0.5;
 const float BLOOM_SOFTNESS = 0.50;
 const float BLOOM_INTENSITY = 10.9;
 
-const float VIGNETTE_INNER = 0.8;
-const float VIGNETTE_OUTER = 1.0;
-const float VIGNETTE_STRENGTH = 0.3;
+const float VIGNETTE_INNER = 1.2;
+const float VIGNETTE_OUTER = 1.5;
+const float VIGNETTE_STRENGTH = 0.9;
 const vec3 VIGNETTE_TINT_COLOR = vec3(0.55, 0.42, 0.32);
 
 vec3 BrightPass(vec2 uv)
